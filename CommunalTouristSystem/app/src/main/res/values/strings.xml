@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">CommunalTouristSystem</string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- Navigation drawer items names-->
+    <string name="informations">Informacje</string>
+    <string name="terrain_map">Mapa teren</string>
+    <string name="satelite_map">Mapa satelita</string>
+    <string name="show_current_pos">Pokaż aktualną pozycję</string>
+    <string name="way_trace">Sledź trasę</string>
+    <string name="capture_photo">Zrób zdjęcie</string>
+    <string name="settings">Ustawienia</string>
+    <string name="load_conf_file">Wczytaj plik konfiguracyjny</string>
+
+    <string name="others">Inne</string>
+</resources>
