@@ -1,33 +1,32 @@
-package com.example.mrlukashem.utils;
+package com.system.mrlukashem.utils;
 
-import android.os.Bundle;
 import com.google.android.gms.maps.model.LatLng;
+import com.system.mrlukashem.communaltouristsystem.CommunalPlace;
+import com.system.mrlukashem.refbases.PlaceRefBase;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by mrlukashem on 02.11.15.
  */
 public class XmlContentContainer {
 
-    private static XmlContentContainer mInstance =
-            new XmlContentContainer();
+    private static XmlContentContainer mInstance
+            = new XmlContentContainer();
 
-    private List<Place> mPlacesList =
-            new ArrayList<>();
+    private List<PlaceRefBase> mPlacesList
+            = new ArrayList<>();
 
     private CommuneDesc mCommuneDesc
             = new CommuneDesc();
 
-    private Place mNewPlaceInstance =
-            new Place();
+    private PlaceRefBase mNewPlaceInstance
+            = new CommunalPlace();
 
-    private String mNewPlaceLat;
+    private String mNewPlaceLat = "";
 
-    private String mNewPlaceLng;
+    private String mNewPlaceLng = "";
 
     private void setNewPlaceInstanceCords() {
         double lat = Double.parseDouble(mNewPlaceLat);
@@ -41,9 +40,9 @@ public class XmlContentContainer {
 
         if(mNewPlaceInstance.getCords() == null) {
             completeness = false;
-        } else if(mNewPlaceInstance.getName() == null) {
+        } else if(mNewPlaceInstance.getName().isEmpty()) {
             completeness = false;
-        } else if(mNewPlaceInstance.getDesc() == null) {
+        } else if(mNewPlaceInstance.getDescription().isEmpty()) {
             completeness = false;
         }
 
@@ -59,29 +58,29 @@ public class XmlContentContainer {
     public void pushData(String name, String data) {
         switch (name) {
             case "place_name":
-                if(mNewPlaceInstance.getName() == null) {
+                if(mNewPlaceInstance.getName().isEmpty()) {
                     mNewPlaceInstance.setName(data);
                 }
                 break;
             case "description":
-                if(mNewPlaceInstance.getDesc() == null) {
-                    mNewPlaceInstance.setDesc(data);
+                if(mNewPlaceInstance.getDescription().isEmpty()) {
+                    mNewPlaceInstance.setDescription(data);
                 }
                 break;
             case "path_to_img_file":
-                if(mNewPlaceInstance.getPath() == null) {
-                    mNewPlaceInstance.setPath(data);
+                if(mNewPlaceInstance.getPicPath().isEmpty()) {
+                    mNewPlaceInstance.setPicPath(data);
                 }
                 break;
             case "http_path":
-                if(mNewPlaceInstance.getPath() == null) {
-                    mNewPlaceInstance.setPath(data);
+                if(mNewPlaceInstance.getPicPath().isEmpty()) {
+                    mNewPlaceInstance.setPicPath(data);
                 }
                 break;
             case "Lat":
                 if(mNewPlaceInstance.getCords() == null) {
                     mNewPlaceLat = data;
-                    if(mNewPlaceLat != null && mNewPlaceLng != null) {
+                    if(!mNewPlaceLat.isEmpty() && !mNewPlaceLng.isEmpty()) {
                         setNewPlaceInstanceCords();
                     }
                 }
@@ -89,7 +88,7 @@ public class XmlContentContainer {
             case "Lng":
                 if(mNewPlaceInstance.getCords() == null) {
                     mNewPlaceLng = data;
-                    if(mNewPlaceLat != null && mNewPlaceLng != null) {
+                    if(!mNewPlaceLat.isEmpty() && !mNewPlaceLng.isEmpty()) {
                         setNewPlaceInstanceCords();
                     }
                 }
@@ -121,63 +120,7 @@ public class XmlContentContainer {
         if(checkNewPlaceInstanceCompleteness()) {
             mPlacesList.add(mNewPlaceInstance);
 
-            mNewPlaceInstance = new Place();
-        }
-    }
-
-    public static class Place {
-
-        private String mName;
-
-        private String mDesc;
-
-        private String mPath = "";
-
-        private LatLng mCords;
-
-        private Place(String name, String desc, String path, LatLng cords) {
-            mName = name;
-            mDesc = desc;
-            mPath = path;
-            mCords = cords;
-        }
-
-        private Place() {}
-
-        public boolean isHttpPath() {
-            return mPath.substring(0, 4).equals("http");
-        }
-
-        public String getName() {
-            return mName;
-        }
-
-        public String getDesc() {
-            return mDesc;
-        }
-
-        public String getPath() {
-            return mPath;
-        }
-
-        public LatLng getCords() {
-            return mCords;
-        }
-
-        public void setName(String mName) {
-            this.mName = mName;
-        }
-
-        public void setDesc(String mDesc) {
-            this.mDesc = mDesc;
-        }
-
-        public void setPath(String mPath) {
-            this.mPath = mPath;
-        }
-
-        public void setCords(LatLng mCords) {
-            this.mCords = mCords;
+            mNewPlaceInstance = new CommunalPlace();
         }
     }
 

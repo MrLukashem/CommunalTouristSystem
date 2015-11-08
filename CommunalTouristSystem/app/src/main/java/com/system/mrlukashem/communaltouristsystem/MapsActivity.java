@@ -1,11 +1,9 @@
-package com.example.mrlukashem.communaltouristsystem;
+package com.system.mrlukashem.communaltouristsystem;
 
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Environment;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
 import android.support.v4.view.GravityCompat;
@@ -16,10 +14,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.example.mrlukashem.utils.XmlManager;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.system.mrlukashem.Interfaces.MapManager;
+import com.system.mrlukashem.utils.XmlContentContainer;
+import com.system.mrlukashem.utils.XmlManager;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileInputStream;
@@ -32,7 +32,7 @@ public class MapsActivity
 
     private GoogleMap mMap;
 
-    private SupportMapFragment mMapFragment;
+    private MapManager<XmlContentContainer.Place> mMapManager;
 
     private final String mMapFragmentName = "MapFragment";
 
@@ -85,6 +85,15 @@ public class MapsActivity
         mNavigationView.setNavigationItemSelectedListener(this);
     }
 
+    private void initMapManager() {
+        mMapManager = CustomMapManager.getInstance();
+        CustomMapManager.setGoogleMap(mMap);
+    }
+
+    private void fillInformationView() {
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +103,7 @@ public class MapsActivity
         initMapFragment();
         initToolBar();
         initNavigationView();
+        initMapManager();
 
         try {
             String path = Environment.getExternalStorageDirectory().getPath() + "/xml_files/content.xml";
