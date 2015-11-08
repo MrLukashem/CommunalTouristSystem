@@ -15,7 +15,7 @@ public class NullChecker {
         return value;
     }
 
-    public static <T> T isNull(T value, String message) {
+    public static <T> T isNull(T value, String message) throws NullPointerException {
         if(value == null) {
             throw new NullPointerException(message);
         }

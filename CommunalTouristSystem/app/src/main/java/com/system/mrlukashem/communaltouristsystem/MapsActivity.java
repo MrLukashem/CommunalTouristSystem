@@ -18,6 +18,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.system.mrlukashem.Interfaces.MapManager;
+import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.utils.XmlContentContainer;
 import com.system.mrlukashem.utils.XmlManager;
 import org.xmlpull.v1.XmlPullParserException;
@@ -32,7 +33,7 @@ public class MapsActivity
 
     private GoogleMap mMap;
 
-    private MapManager<XmlContentContainer.Place> mMapManager;
+    private MapManager<PlaceRefBase> mMapManager;
 
     private final String mMapFragmentName = "MapFragment";
 
