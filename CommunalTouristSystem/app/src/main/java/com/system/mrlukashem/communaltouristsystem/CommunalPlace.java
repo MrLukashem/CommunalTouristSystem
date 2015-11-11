@@ -17,7 +17,7 @@ public class CommunalPlace extends PlaceRefBase {
         mName = EMPTY_STRING;
         mDescription = EMPTY_STRING;
         mPicPath = EMPTY_STRING;
-        mCords = new LatLng(.0, .0);
+        mCords = null;
     }
 
     @Override

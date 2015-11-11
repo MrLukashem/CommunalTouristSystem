@@ -12,6 +12,20 @@ import java.util.List;
  */
 public class XmlContentContainer {
 
+    private final String PLACE_NAME = "place_name";
+    private final String DESCRIPTION = "description";
+    private final String PATH_TO_IMG_FILE = "path_to_img_file";
+    private final String HTTP_PATH = "http_path";
+    private final String LAT = "Lat";
+    private final String LNG = "Lng";
+    private final String NAME = "name";
+    private final String POPULATION = "population";
+    private final String COMMUNAL_PLACE = "communal_place";
+    private final String MAYOR = "major";
+    private final String HISTORY = "history";
+    private final String PLACEMENT = "placement";
+    private final String OTHERS = "others";
+
     private static XmlContentContainer mInstance
             = new XmlContentContainer();
 
@@ -44,6 +58,8 @@ public class XmlContentContainer {
             completeness = false;
         } else if(mNewPlaceInstance.getDescription().isEmpty()) {
             completeness = false;
+        } else if(mNewPlaceInstance.getPicPath().isEmpty()) {
+            completeness = false;
         }
 
         return completeness;
@@ -57,27 +73,27 @@ public class XmlContentContainer {
 
     public void pushData(String name, String data) {
         switch (name) {
-            case "place_name":
+            case PLACE_NAME:
                 if(mNewPlaceInstance.getName().isEmpty()) {
                     mNewPlaceInstance.setName(data);
                 }
                 break;
-            case "description":
+            case DESCRIPTION:
                 if(mNewPlaceInstance.getDescription().isEmpty()) {
                     mNewPlaceInstance.setDescription(data);
                 }
                 break;
-            case "path_to_img_file":
+            case PATH_TO_IMG_FILE:
                 if(mNewPlaceInstance.getPicPath().isEmpty()) {
                     mNewPlaceInstance.setPicPath(data);
                 }
                 break;
-            case "http_path":
+            case HTTP_PATH:
                 if(mNewPlaceInstance.getPicPath().isEmpty()) {
                     mNewPlaceInstance.setPicPath(data);
                 }
                 break;
-            case "Lat":
+            case LAT:
                 if(mNewPlaceInstance.getCords() == null) {
                     mNewPlaceLat = data;
                     if(!mNewPlaceLat.isEmpty() && !mNewPlaceLng.isEmpty()) {
@@ -85,7 +101,7 @@ public class XmlContentContainer {
                     }
                 }
                 break;
-            case "Lng":
+            case LNG:
                 if(mNewPlaceInstance.getCords() == null) {
                     mNewPlaceLng = data;
                     if(!mNewPlaceLat.isEmpty() && !mNewPlaceLng.isEmpty()) {
@@ -93,26 +109,26 @@ public class XmlContentContainer {
                     }
                 }
                 break;
-            case "name":
+            case NAME:
                 mCommuneDesc.setName(data);
                 break;
-            case "population":
+            case POPULATION:
                 int population = Integer.parseInt(data);
                 mCommuneDesc.setPopulation(population);
                 break;
-            case "communal_place":
+            case COMMUNAL_PLACE:
                 mCommuneDesc.addPlace(data);
                 break;
-            case "mayor":
+            case MAYOR:
                 mCommuneDesc.setMajor(data);
                 break;
-            case "history":
+            case HISTORY:
                 mCommuneDesc.setHistory(data);
                 break;
-            case "placement":
+            case PLACEMENT:
                 mCommuneDesc.setPlacement(data);
                 break;
-            case "others":
+            case OTHERS:
                 mCommuneDesc.setOthers(data);
                 break;
         }

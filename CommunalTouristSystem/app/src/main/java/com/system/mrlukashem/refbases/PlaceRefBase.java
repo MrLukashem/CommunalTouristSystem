@@ -13,7 +13,7 @@ public abstract class PlaceRefBase {
 
     protected String mPicPath;
 
-    protected LatLng mCords;
+    protected LatLng mCords = null;
 
     public PlaceRefBase() {}
 

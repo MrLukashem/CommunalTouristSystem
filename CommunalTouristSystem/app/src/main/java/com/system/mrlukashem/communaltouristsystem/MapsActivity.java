@@ -104,7 +104,6 @@ public class MapsActivity
         initMapFragment();
         initToolBar();
         initNavigationView();
-        initMapManager();
 
         try {
             String path = Environment.getExternalStorageDirectory().getPath() + "/xml_files/content.xml";
@@ -133,6 +132,7 @@ public class MapsActivity
     public void onMapReady(GoogleMap googleMap) {
         //TODO: Moving camera onMapReady for place includes in xml file. Example: moveCamera(CameraUpdateFactory.newLatLng(new_place_latlng));
         mMap = googleMap;
+        initMapManager();
     }
 
     @Override

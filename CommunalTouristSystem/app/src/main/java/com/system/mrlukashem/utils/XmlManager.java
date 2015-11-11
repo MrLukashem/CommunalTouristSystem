@@ -33,10 +33,16 @@ public class XmlManager {
         factory.setNamespaceAware(false);
         mXmlParser= factory.newPullParser();
 
-        String result = inputStreamToStringBuilder(inputStream).toString();
-        result.replaceAll("\\n|\\r", "");
+        StringBuilder temp = inputStreamToStringBuilder(inputStream);
+        StringBuilder result = new StringBuilder();
+        for(int i = 0; i < temp.length(); i++) {
+            if(temp.charAt(i) != '\t' && temp.charAt(i) != '\r') {
+                result.append(temp.charAt(i));
+            }
+        }
 
-        mXmlParser.setInput(new StringReader(result));
+        String result_string = result.toString();
+        mXmlParser.setInput(new StringReader(result_string));
     }
 
     public static XmlManager newXmlManager(InputStream inputStream) throws XmlPullParserException, IOException {
