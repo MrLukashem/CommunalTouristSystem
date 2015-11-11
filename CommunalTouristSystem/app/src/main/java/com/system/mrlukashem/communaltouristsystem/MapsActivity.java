@@ -199,6 +199,7 @@ public class MapsActivity
     public void onMapReady(GoogleMap googleMap) {
         //TODO: Moving camera onMapReady for place includes in xml file. Example: moveCamera(CameraUpdateFactory.newLatLng(new_place_latlng));
         mMap = googleMap;
+        mMap.setInfoWindowAdapter(new CustomInfoWindow(getApplicationContext()));
         initMapManager();
     }
 
