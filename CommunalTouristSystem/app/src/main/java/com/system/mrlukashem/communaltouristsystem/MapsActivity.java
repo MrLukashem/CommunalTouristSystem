@@ -1,6 +1,7 @@
 package com.system.mrlukashem.communaltouristsystem;
 
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Environment;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -14,9 +15,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.system.mrlukashem.Fragments.InfoFragment;
+import com.system.mrlukashem.Interfaces.FillContentCallback;
 import com.system.mrlukashem.Interfaces.MapManager;
 import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.utils.XmlContentContainer;
@@ -26,10 +32,20 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 public class MapsActivity
         extends AppCompatActivity
-        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, FillContentCallback {
+
+    private final String INFORMATIONS = "Informacje";
+    private final String TERREIN_MAP = "Mapa terenu";
+    private final String SATELITE_MAP = "Mapa satelitarna";
+    private final String SHOW_CURRENT_POS = "Pokaż aktualna pozycję";
+    private final String WAY_TRACE = "Sledź trasę";
+    private final String CAPTURE_PHOTO = "Zrób zdjęcie";
+    private final String SETTINGS = "Ustawienia";
+    private final String LOAD_CONF_FILE = "Wczytaj plik konfiguracyjny";
 
     private GoogleMap mMap;
 
@@ -40,6 +56,8 @@ public class MapsActivity
     private android.support.v4.app.FragmentManager mSupportFragmentManager;
 
     private FragmentManager mFragmentManager;
+
+    private android.app.Fragment mCurrentFragment;
 
     private Toolbar mToolBar;
 
@@ -87,12 +105,61 @@ public class MapsActivity
     }
 
     private void initMapManager() {
-        mMapManager = CustomMapManager.getInstance();
+        //TODO: A little changes in CustomMapManager architecture/
         CustomMapManager.setGoogleMap(mMap);
+        mMapManager = CustomMapManager.getInstance();
     }
 
-    private void fillInformationView() {
+    private void fillInformationView(View view) {
+        TextView name = (TextView)view.findViewById(R.id.communeName);
+        TextView major = (TextView)view.findViewById(R.id.major);
+        TextView history = (TextView)view.findViewById(R.id.history);
+        TextView placement = (TextView)view.findViewById(R.id.placement);
+        TextView others = (TextView)view.findViewById(R.id.others);
+        TextView places = (TextView)view.findViewById(R.id.communalPlaces);
 
+        CommuneDescriptor communeDescriptor = XmlContentContainer.getInstance().getCommuneDesc();
+        name.setText(communeDescriptor.getName());
+        major.setText(communeDescriptor.getMajor());
+        history.setText(communeDescriptor.getHistory());
+        placement.setText(communeDescriptor.getPlacement());
+        others.setText(communeDescriptor.getOthers());
+        places.setText(communeDescriptor.getCommunalPlaces().toString());
+    }
+
+    private void showMapFragment() {
+        android.support.v4.app.FragmentTransaction fragmentTransaction =
+                mSupportFragmentManager.beginTransaction();
+
+        Fragment mapFragment = mSupportFragmentManager.findFragmentByTag(mMapFragmentName);
+        fragmentTransaction.show(mapFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void hideMapFragment() {
+        android.support.v4.app.FragmentTransaction fragmentTransaction =
+                mSupportFragmentManager.beginTransaction();
+
+        Fragment mapFragment = mSupportFragmentManager.findFragmentByTag(mMapFragmentName);
+        fragmentTransaction.hide(mapFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void removeCurrentFragment() {
+        FragmentTransaction fragmentTransaction =
+                mFragmentManager.beginTransaction();
+
+        fragmentTransaction.remove(mCurrentFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void showInfoFragment() {
+        FragmentTransaction fragmentTransaction =
+                mFragmentManager.beginTransaction();
+
+        mCurrentFragment = new InfoFragment();
+        fragmentTransaction.add(R.id.content_container, mCurrentFragment);
+        fragmentTransaction.commit();
     }
 
     @Override
@@ -170,16 +237,32 @@ public class MapsActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         switch (menuItem.getTitle().toString()) {
-            case "Informacje":
-                android.support.v4.app.FragmentTransaction fragmentTransaction =
-                        mSupportFragmentManager.beginTransaction();
-
-                Fragment mapFragment = mSupportFragmentManager.findFragmentByTag(mMapFragmentName);
-                fragmentTransaction.hide(mapFragment);
-     //           fragmentTransaction.remove(mapFragment);
-                fragmentTransaction.commit();
+            case INFORMATIONS:
+                hideMapFragment();
+                showInfoFragment();
+                break;
+            case TERREIN_MAP:
+                removeCurrentFragment();
+                showMapFragment();
+                break;
+            case SATELITE_MAP:
+                break;
+            case SHOW_CURRENT_POS:
+                break;
+            case WAY_TRACE:
+                break;
+            case CAPTURE_PHOTO:
+                break;
+            case SETTINGS:
+                break;
+            case LOAD_CONF_FILE:
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void invoke(View view) {
+        fillInformationView(view);
     }
 }

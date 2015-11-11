@@ -9,7 +9,7 @@
 
     <!-- Navigation drawer items names-->
     <string name="informations">Informacje</string>
-    <string name="terrain_map">Mapa teren</string>
+    <string name="terrain_map">Mapa terenu</string>
     <string name="satelite_map">Mapa satelita</string>
     <string name="show_current_pos">Pokaż aktualną pozycję</string>
     <string name="way_trace">Sledź trasę</string>
@@ -17,5 +17,8 @@
     <string name="settings">Ustawienia</string>
     <string name="load_conf_file">Wczytaj plik konfiguracyjny</string>
 
-    <string name="other">Inne</string>
+    <string name="others">Inne</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

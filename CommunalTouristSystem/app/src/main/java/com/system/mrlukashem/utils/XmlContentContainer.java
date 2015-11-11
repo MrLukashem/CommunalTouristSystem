@@ -2,6 +2,7 @@ package com.system.mrlukashem.utils;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.system.mrlukashem.communaltouristsystem.CommunalPlace;
+import com.system.mrlukashem.communaltouristsystem.CommuneDescriptor;
 import com.system.mrlukashem.refbases.PlaceRefBase;
 
 import java.util.ArrayList;
@@ -32,8 +33,8 @@ public class XmlContentContainer {
     private List<PlaceRefBase> mPlacesList
             = new ArrayList<>();
 
-    private CommuneDesc mCommuneDesc
-            = new CommuneDesc();
+    private CommuneDescriptor mCommuneDesc
+            = new CommuneDescriptor();
 
     private PlaceRefBase mNewPlaceInstance
             = new CommunalPlace();
@@ -140,66 +141,11 @@ public class XmlContentContainer {
         }
     }
 
-    public static class CommuneDesc {
+    public List<PlaceRefBase> getPlacesList() {
+        return mPlacesList;
+    }
 
-        private String mName;
-
-        private int mPopulation;
-
-        private String mMajor;
-
-        private String mHistory;
-
-        private String mPlacement;
-
-        private String mOthers;
-
-        private List<String> mCommunalPlaces =
-                new ArrayList<>();
-
-        public CommuneDesc(
-                String name,
-                int population,
-                String major,
-                String history,
-                String placement,
-                String others) {
-            mName = name;
-            mPopulation = population;
-            mMajor = major;
-            mHistory = history;
-            mPlacement = placement;
-            mOthers = others;
-        }
-
-        public CommuneDesc() {}
-
-        public void addPlace(String name) {
-            mCommunalPlaces.add(name);
-        }
-
-        public void setName(String mName) {
-            this.mName = mName;
-        }
-
-        public void setPopulation(int mPopulation) {
-            this.mPopulation = mPopulation;
-        }
-
-        public void setMajor(String mMajor) {
-            this.mMajor = mMajor;
-        }
-
-        public void setHistory(String mHistory) {
-            this.mHistory = mHistory;
-        }
-
-        public void setPlacement(String mPlacement) {
-            this.mPlacement = mPlacement;
-        }
-
-        public void setOthers(String mOthers) {
-            this.mOthers = mOthers;
-        }
+    public CommuneDescriptor getCommuneDesc() {
+        return mCommuneDesc;
     }
 }
