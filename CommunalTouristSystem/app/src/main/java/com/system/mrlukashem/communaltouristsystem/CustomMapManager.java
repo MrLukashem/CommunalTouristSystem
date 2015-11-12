@@ -38,7 +38,7 @@ public class CustomMapManager implements MapManager<PlaceRefBase> {
         mInstance.mMap = map;
     }
 
-    public static CustomMapManager getInstance() {
+    public static CustomMapManager getInstance() throws NullPointerException {
         NullChecker.isNull(mInstance.mMap, mInstance.ERROR_MAP_NULL);
 
         return mInstance;
@@ -88,7 +88,7 @@ public class CustomMapManager implements MapManager<PlaceRefBase> {
     public PlaceRefBase findElementByMarker(@NonNull Marker marker) {
 
         for(Map.Entry<String, Pair<PlaceRefBase, Marker>> entry : mPlacesMap.entrySet()) {
-            if(marker == entry.getValue().second) {
+            if(marker.equals(entry.getValue().second)) {
                 return entry.getValue().first;
             }
         }

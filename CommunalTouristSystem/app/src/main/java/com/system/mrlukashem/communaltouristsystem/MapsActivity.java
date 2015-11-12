@@ -106,8 +106,13 @@ public class MapsActivity
 
     private void initMapManager() {
         //TODO: A little changes in CustomMapManager architecture/
-        CustomMapManager.setGoogleMap(mMap);
-        mMapManager = CustomMapManager.getInstance();
+        try {
+            CustomMapManager.setGoogleMap(mMap);
+            mMapManager = CustomMapManager.getInstance();
+        } catch(NullPointerException npe) {
+            Log.e("initMapManager:" , npe.getMessage());
+            npe.printStackTrace();
+        }
     }
 
     private void fillInformationView(View view) {
@@ -162,6 +167,11 @@ public class MapsActivity
         fragmentTransaction.commit();
     }
 
+    private void pushElementsOnMap() {
+        List<PlaceRefBase> list = XmlContentContainer.getInstance().getPlacesList();
+        mMapManager.pushElement(list.get(0), "center");
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -201,6 +211,8 @@ public class MapsActivity
         mMap = googleMap;
         mMap.setInfoWindowAdapter(new CustomInfoWindow(getApplicationContext()));
         initMapManager();
+
+        pushElementsOnMap();
     }
 
     @Override
