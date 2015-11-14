@@ -1,6 +1,6 @@
 package com.system.mrlukashem.refbases;
 
-import android.content.pm.LabeledIntent;
+import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -13,6 +13,16 @@ import java.util.List;
 public abstract class TrackingWayRefBase {
 
     private List<LatLng> mWayPoints = new ArrayList<>();
+
+    private String mTag = "";
+
+    public String getTag() {
+        return mTag;
+    }
+
+    public void setTag(@NonNull String tag) {
+        mTag = tag;
+    }
 
     public abstract void pushPoint(LatLng point);
 

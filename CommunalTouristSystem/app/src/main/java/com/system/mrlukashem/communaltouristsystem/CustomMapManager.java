@@ -1,6 +1,7 @@
 package com.system.mrlukashem.communaltouristsystem;
 
 import android.graphics.Color;
+import android.util.Pair;
 
 import android.support.annotation.NonNull;
 
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import android.util.Pair;
 
 /**
  * Created by mrlukashem on 08.11.15.
