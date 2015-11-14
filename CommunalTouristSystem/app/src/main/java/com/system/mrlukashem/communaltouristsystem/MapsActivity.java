@@ -2,7 +2,10 @@ package com.system.mrlukashem.communaltouristsystem;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -40,12 +43,14 @@ public class MapsActivity
 
     private final String INFORMATIONS = "Informacje";
     private final String TERREIN_MAP = "Mapa terenu";
-    private final String SATELITE_MAP = "Mapa satelitarna";
+    private final String SATELITE_MAP = "Mapa satelita";
     private final String SHOW_CURRENT_POS = "Pokaż aktualna pozycję";
     private final String WAY_TRACE = "Sledź trasę";
     private final String CAPTURE_PHOTO = "Zrób zdjęcie";
     private final String SETTINGS = "Ustawienia";
     private final String LOAD_CONF_FILE = "Wczytaj plik konfiguracyjny";
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private GoogleMap mMap;
 
@@ -112,6 +117,14 @@ public class MapsActivity
         } catch(NullPointerException npe) {
             Log.e("initMapManager:" , npe.getMessage());
             npe.printStackTrace();
+        }
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
@@ -195,6 +208,14 @@ public class MapsActivity
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            //mImageView.setImageBitmap(imageBitmap);
+        }
+    }
 
     /**
      * Manipulates the map once available.
@@ -259,6 +280,7 @@ public class MapsActivity
                 showMapFragment();
                 break;
             case SATELITE_MAP:
+                dispatchTakePictureIntent();
                 break;
             case SHOW_CURRENT_POS:
                 break;
