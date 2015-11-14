@@ -1,5 +1,7 @@
 package com.system.mrlukashem.refbases;
 
+import android.content.pm.LabeledIntent;
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -12,17 +14,13 @@ public abstract class TrackingWayRefBase {
 
     private List<LatLng> mWayPoints = new ArrayList<>();
 
-    public void pushPoint(LatLng point) {
-        mWayPoints.add(point);
-    }
+    public abstract void pushPoint(LatLng point);
 
-    public void pushPoints(List<LatLng> points) {
-        mWayPoints.addAll(points);
-    }
+    public abstract void pushPoints(List<LatLng> points);
 
-    public void clearWayData() {
-        mWayPoints.clear();
-    }
+    public abstract void clearWayData();
+
+    public abstract List<LatLng> getPoints();
 
     public abstract boolean isNill();
 }

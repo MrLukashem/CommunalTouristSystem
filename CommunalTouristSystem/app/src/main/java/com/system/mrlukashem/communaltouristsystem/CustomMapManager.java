@@ -1,16 +1,16 @@
 package com.system.mrlukashem.communaltouristsystem;
 
 import android.graphics.Color;
+
 import android.support.annotation.NonNull;
-import android.util.Pair;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+
 import com.system.mrlukashem.Interfaces.MapManager;
 import com.system.mrlukashem.nullobjects.NullPlace;
 import com.system.mrlukashem.nullobjects.NullTrackingWay;
@@ -18,9 +18,11 @@ import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.refbases.TrackingWayRefBase;
 import com.system.mrlukashem.utils.NullChecker;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import android.util.Pair;
 
 /**
  * Created by mrlukashem on 08.11.15.
@@ -148,15 +150,36 @@ public class CustomMapManager implements MapManager<PlaceRefBase> {
 
     @Override
     public boolean updateTrackingWay(List<LatLng> points, String tag) {
-        if(result.isNill()) {
+        Pair<TrackingWayRefBase, Polyline> result = mTrackingWayMap.get(tag);
+
+        if(result != null && !result.first.isNill()) {
             return false;
         }
 
-        //TODO: what is result is not null? Implement it!
+        try {
+            result.second.remove();
+
+            List<LatLng> updatedPoints = result.first.getPoints();
+            updatedPoints.addAll(points);
+
+            mTrackingWayMap.remove(tag);
+            if(mTrackingWayMap.get(tag) == null) {
+                return pushNewTrackingWay(updatedPoints, tag);
+            }
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+
+            return false;
+        }
+
+        return false;
     }
 
     @Override
     public boolean updateTrackingWay(LatLng point, String tag) {
-        //TODO: To implement!
+        List<LatLng> list = new ArrayList<>();
+        list.add(point);
+
+        return updateTrackingWay(list, tag);
     }
 }
