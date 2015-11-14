@@ -4,6 +4,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.LocationManager;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.system.mrlukashem.Fragments.InfoFragment;
 import com.system.mrlukashem.Interfaces.FillContentCallback;
 import com.system.mrlukashem.Interfaces.MapManager;
+import com.system.mrlukashem.Interfaces.ServicesProvider;
 import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.utils.XmlContentContainer;
 import com.system.mrlukashem.utils.XmlManager;
@@ -39,7 +41,7 @@ import java.util.List;
 
 public class MapsActivity
         extends AppCompatActivity
-        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, FillContentCallback {
+        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, FillContentCallback, ServicesProvider {
 
     private final String INFORMATIONS = "Informacje";
     private final String TERREIN_MAP = "Mapa terenu";
@@ -299,5 +301,12 @@ public class MapsActivity
     @Override
     public void invoke(View view) {
         fillInformationView(view);
+    }
+
+    @Override
+    public LocationManager getLocationService() {
+        LocationManager locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+
+        return locationManager;
     }
 }
