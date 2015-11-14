@@ -1,9 +1,11 @@
 package com.system.mrlukashem.Interfaces;
 
-import android.support.annotation.NonNull;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+
+import com.system.mrlukashem.refbases.TrackingWayRefBase;
+
+import java.util.List;
 
 /**
  * Created by mrlukashem on 08.11.15.
@@ -19,4 +21,12 @@ public interface MapManager <T> {
     T findElementByMarker(Marker marker);
 
     LatLng getCordsByElementTag(String tag);
+
+    boolean pushNewTrackingWay(List<LatLng> points, String tag);
+
+    TrackingWayRefBase findTrackingWayByTag(String tag);
+
+    boolean updateTrackingWay(List<LatLng> points, String tag);
+
+    boolean updateTrackingWay(LatLng point, String tag);
 }
