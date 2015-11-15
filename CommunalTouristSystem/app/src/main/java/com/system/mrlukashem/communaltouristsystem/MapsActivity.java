@@ -25,11 +25,14 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.system.mrlukashem.Fragments.InfoFragment;
 import com.system.mrlukashem.Interfaces.FillContentCallback;
 import com.system.mrlukashem.Interfaces.MapManager;
 import com.system.mrlukashem.Interfaces.ServicesProvider;
+import com.system.mrlukashem.datebase.DatabaseWrapper;
 import com.system.mrlukashem.refbases.PlaceRefBase;
+import com.system.mrlukashem.refbases.TrackingWayRefBase;
 import com.system.mrlukashem.utils.XmlContentContainer;
 import com.system.mrlukashem.utils.XmlManager;
 import org.xmlpull.v1.XmlPullParserException;
@@ -37,6 +40,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity
@@ -206,6 +211,25 @@ public class MapsActivity
 
             inputStream.close();
         } catch(IOException | XmlPullParserException exc) {
+            exc.printStackTrace();
+        }
+
+        try {
+            DatabaseWrapper databaseWrapper = DatabaseWrapper.getInstanceAndInitDb(getApplicationContext());
+
+            TrackingWayRefBase trackingWayRefBase = new TrackingWay();
+            List<LatLng> list = new ArrayList<>();
+            list.add(new LatLng(0, 1));
+            list.add(new LatLng(1, 1));
+            list.add(new LatLng(23, 11));
+            trackingWayRefBase.pushPoints(list);
+
+            trackingWayRefBase.setTag("droga");
+
+            databaseWrapper.put(trackingWayRefBase);
+
+            databaseWrapper.read(trackingWayRefBase, "droga");
+        } catch (SQLException exc) {
             exc.printStackTrace();
         }
     }

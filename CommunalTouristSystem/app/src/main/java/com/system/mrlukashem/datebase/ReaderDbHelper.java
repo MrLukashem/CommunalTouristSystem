@@ -1,8 +1,11 @@
 package com.system.mrlukashem.datebase;
 
 import android.content.Context;
+
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.sql.SQLException;
 
 /**
  * Created by mrlukashem on 14.11.15.
@@ -24,7 +27,7 @@ public class ReaderDbHelper extends SQLiteOpenHelper {
     private static final String RIGHT_BRACKET = ");";
 
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE" + ReaderContract.Entry.TABLE_NAME
+            "CREATE TABLE " + ReaderContract.Entry.TABLE_NAME
             + LEFT_BRACKET + ReaderContract.Entry.COLUMN_NAME_ENTRY_ID + TEXT_TYPE
             + COMMA_SEP
             + ReaderContract.Entry.COLUMN_NAME_LAT + NUMBER_TYPE
@@ -36,7 +39,7 @@ public class ReaderDbHelper extends SQLiteOpenHelper {
             "DROP TABLE IF EXISTS " + ReaderContract.Entry.TABLE_NAME;
 
 
-    public ReaderDbHelper(Context context) {
+    public ReaderDbHelper(Context context) throws SQLException {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

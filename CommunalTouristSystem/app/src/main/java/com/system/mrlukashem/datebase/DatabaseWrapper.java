@@ -3,12 +3,14 @@ package com.system.mrlukashem.datebase;
 import android.content.ContentValues;
 import android.content.Context;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.system.mrlukashem.refbases.TrackingWayRefBase;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -18,13 +20,15 @@ public class DatabaseWrapper {
 
     private static final String ILLEGAL_ARGUMENT_MSG = "Not supported class!";
 
+    private static final String ILLEGAL_ARGUMENTS_LIST_MSG = "Wrong arguments list for given class!";
+
     private DatabaseWrapper() {}
 
     private static DatabaseWrapper mInstance;
 
     private static ReaderDbHelper mDbHelper;
 
-    public static void initDb(@NonNull Context context) {
+    public static void initDb(@NonNull Context context) throws SQLException {
         mDbHelper = new ReaderDbHelper(context);
     }
 
@@ -36,7 +40,7 @@ public class DatabaseWrapper {
         return mInstance;
     }
 
-    public static DatabaseWrapper getInstanceAndInitDb(@NonNull Context context) {
+    public static DatabaseWrapper getInstanceAndInitDb(@NonNull Context context) throws SQLException {
         if(mInstance == null) {
             mInstance = new DatabaseWrapper();
         }
@@ -46,15 +50,19 @@ public class DatabaseWrapper {
         return mInstance;
     }
 
-    public <T> boolean put(@NonNull T value) throws IllegalArgumentException {
+    public <T> boolean put(@NonNull T value) throws SQLException, IllegalArgumentException {
         if(value instanceof TrackingWayRefBase) {
-            SQLiteDatabase db = mDbHelper.getWritableDatabase();
             TrackingWayRefBase way = (TrackingWayRefBase)value;
 
             if(way.isNill()) {
                 return false;
             }
 
+            if(way.getTag().isEmpty()) {
+                return false;
+            }
+
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
             List<LatLng> points = way.getPoints();
 
             for(LatLng point : points) {
@@ -65,18 +73,80 @@ public class DatabaseWrapper {
                 values.put(ReaderContract.Entry.COLUMN_NAME_LNG, point.longitude);
 
                 long rowId = db.insert(
-                        ReaderDbHelper.DATABASE_NAME,
+                        ReaderContract.Entry.TABLE_NAME,
                         null,
                         values);
 
                 if(rowId == -1) {
+                    db.close();
                     return false;
                 }
             }
 
+            db.close();
             return true;
         } else {
             throw new IllegalArgumentException(ILLEGAL_ARGUMENT_MSG);
         }
+    }
+
+    public <T> boolean read(@NonNull T classToBeFilled, Object... args) throws SQLException, IllegalArgumentException {
+        if(classToBeFilled instanceof TrackingWayRefBase) {
+            TrackingWayRefBase way = (TrackingWayRefBase)classToBeFilled;
+
+            if(way.isNill()) {
+                return false;
+            }
+
+            Object tag_obj = args[0];
+            if(tag_obj == null) {
+                throw  new IllegalArgumentException(ILLEGAL_ARGUMENTS_LIST_MSG);
+            }
+
+            String tag;
+            try {
+                tag = (String)tag_obj;
+            } catch (ClassCastException cce) {
+                cce.printStackTrace();
+                throw  new IllegalArgumentException(ILLEGAL_ARGUMENTS_LIST_MSG);
+            }
+
+            SQLiteDatabase db = mDbHelper.getReadableDatabase();
+            String select = "SELECT * FROM " + ReaderContract.Entry.TABLE_NAME
+                    + " WHERE tag=" + "'" + tag + "';";
+
+            Cursor cursor = db.rawQuery(select, null);
+
+            if(cursor == null) {
+                db.close();
+                return false;
+            }
+
+            cursor.moveToFirst();
+            Double lat;
+            Double lng;
+            do {
+                lat = cursor.getDouble(1);
+                lng = cursor.getDouble(2);
+
+                way.pushPoint(new LatLng(lat, lng));
+            } while (cursor.moveToNext());
+
+            cursor.close();
+            db.close();
+
+            return true;
+        } else {
+            throw  new IllegalArgumentException(ILLEGAL_ARGUMENT_MSG);
+        }
+    }
+
+    public void deleteWay(@NonNull String tag) throws SQLException {
+        //TODO: Need to test this function.
+        String delete = "DELETE * FROM " + ReaderContract.Entry.TABLE_NAME
+                + " WHERE tag=" + "'" + tag + "';";
+
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        db.execSQL(delete);
     }
 }
