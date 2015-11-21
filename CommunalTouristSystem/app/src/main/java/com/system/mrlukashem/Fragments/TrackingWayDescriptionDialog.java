@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import com.system.mrlukashem.Interfaces.StartWayTracingCallback;
 import com.system.mrlukashem.communaltouristsystem.R;
 import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.refbases.TrackingWayRefBase;
@@ -21,6 +22,8 @@ public class TrackingWayDescriptionDialog extends DialogFragment {
     private final String DIALOG_TITLE = "Wprowadź informacje o nowej trasie";
 
     private TrackingWayRefBase mWay;
+
+    private StartWayTracingCallback mStartWayTracingCB;
 
     public static TrackingWayDescriptionDialog newInstance(TrackingWayRefBase way) {
         if(way.isNill()) {
@@ -35,6 +38,8 @@ public class TrackingWayDescriptionDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mStartWayTracingCB = (StartWayTracingCallback)getActivity();
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity().getApplicationContext());
         View rootView = inflater.inflate(R.layout.dialog_layout, null);
@@ -49,6 +54,8 @@ public class TrackingWayDescriptionDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         mWay.setDescription(editDesc.getText().toString());
                         mWay.setTitle(editTitle.getText().toString());
+
+                        mStartWayTracingCB.start();
                     }
                 })
                 .setPositiveButton("no", new DialogInterface.OnClickListener() {

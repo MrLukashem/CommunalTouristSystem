@@ -77,8 +77,8 @@ public class PlacesListAdapter extends ArrayAdapter<PlaceRefBase> {
         TextView desc = (TextView)rowView.findViewById(R.id.place_desc);
         ImageView img = (ImageView)rowView.findViewById(R.id.place_img);
 
- //       title.setText(place.getName());
-  //      desc.setText(place.getDescription());
+        title.setText(place.getName());
+        desc.setText(place.getDescription());
         if(img.getDrawable() == null) {
             if(place.getPicPath().contains("http://")) {
                 bitmapLoader.getBitmapFromURL(place.getPicPath(), new CallbackHandler(img));

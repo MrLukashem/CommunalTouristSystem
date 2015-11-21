@@ -21,6 +21,7 @@
     <string name="places_list">Pokaż listę miejsc</string>
 
     <string name="others">Inne</string>
+    <string name="configuration">Konfiguracja</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -34,10 +34,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.system.mrlukashem.Fragments.InfoFragment;
 import com.system.mrlukashem.Fragments.PlacesListFragment;
+import com.system.mrlukashem.Fragments.TrackingWayDescriptionDialog;
+import com.system.mrlukashem.Fragments.WaysListFragment;
 import com.system.mrlukashem.Interfaces.FillContentCallback;
 import com.system.mrlukashem.Interfaces.FillPlacesListCallback;
+import com.system.mrlukashem.Interfaces.FillWaysListCallback;
 import com.system.mrlukashem.Interfaces.MapManager;
 import com.system.mrlukashem.Interfaces.ServicesProvider;
+import com.system.mrlukashem.Interfaces.StartWayTracingCallback;
 import com.system.mrlukashem.datebase.DatabaseWrapper;
 import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.refbases.TrackingWayRefBase;
@@ -56,7 +60,8 @@ import java.util.List;
 public class MapsActivity
         extends AppCompatActivity
         implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener,
-        FillContentCallback, ServicesProvider, FillPlacesListCallback {
+        FillContentCallback, ServicesProvider, FillPlacesListCallback, FillWaysListCallback,
+        StartWayTracingCallback {
 
     private final String INFORMATIONS = "Informacje";
     private final String TERREIN_MAP = "Mapa terenu";
@@ -97,6 +102,8 @@ public class MapsActivity
     private ServicesProvider mServicesProvider;
 
     private boolean mServiceIsBound = false;
+
+    private TrackingWayRefBase mTracingWay = new TrackingWay();
 
     private void initFragmentManagers() {
         mSupportFragmentManager = getSupportFragmentManager();
@@ -217,12 +224,21 @@ public class MapsActivity
         fragmentTransaction.commit();
     }
 
+    private void showWaysListFragment() {
+        FragmentTransaction fragmentTransaction =
+                mFragmentManager.beginTransaction();
+
+        mCurrentFragment = new WaysListFragment();
+        fragmentTransaction.add(R.id.content_container, mCurrentFragment);
+        fragmentTransaction.commit();
+    }
+
     private void pushElementsOnMap() {
         List<PlaceRefBase> list = XmlContentContainer.getInstance().getPlacesList();
         mMapManager.pushElement(list.get(0), "center");
     }
 
-    private void setAdapters(View rootView) {
+    private View setPlacesListAdapter(View rootView) {
         final ListView listView = (ListView)rootView.findViewById(R.id.placesListView);
 
         PlaceRefBase[] placeRefBases = new PlaceRefBase[mMapManager.getPlacesList().size()];
@@ -233,6 +249,23 @@ public class MapsActivity
                 mMapManager.getPlacesList().toArray(placeRefBases));
 
         listView.setAdapter(adapter);
+
+        return rootView;
+    }
+
+    private View setWaysListAdapter(View rootView) {
+        final ListView listView = (ListView)rootView.findViewById(R.id.waysListView);
+
+        TrackingWayRefBase[] waysRefBases = new TrackingWay[mMapManager.getTrackingWaysList().size()];
+
+        WaysListAdapter adapter = new WaysListAdapter(
+                getApplicationContext(),
+                R.layout.places_list_element,
+                mMapManager.getPlacesList().toArray(waysRefBases));
+
+        listView.setAdapter(adapter);
+
+        return rootView;
     }
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -241,6 +274,7 @@ public class MapsActivity
             GPSWayTracker.LocalBinder localBinder = (GPSWayTracker.LocalBinder)service;
             mTrackerService = localBinder.getService();
             try {
+                mTrackerService.setMapManager(mMapManager, mTracingWay.getTag());
                 mTrackerService.startGPSListening(1000, 0, mServicesProvider);
             } catch(GPSListener.GPSListenerException e) {
                 e.printStackTrace();
@@ -252,6 +286,10 @@ public class MapsActivity
             mTrackerService = null;
         }
     };
+
+    private void showNewWayTracingDialog() {
+        TrackingWayDescriptionDialog.newInstance(new TrackingWay()).show(mFragmentManager, "showNewWayDialog");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -366,18 +404,17 @@ public class MapsActivity
             case TERREIN_MAP:
                 removeCurrentFragment();
                 showMapFragment();
+                mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
                 break;
             case SATELITE_MAP:
-
+                removeCurrentFragment();
+                showMapFragment();
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 break;
             case SHOW_CURRENT_POS:
                 break;
             case WAY_TRACE:
-                if(!mServiceIsBound) {
-                    Intent intent = new Intent(getApplicationContext(), GPSWayTracker.class);
-                    startService(intent);
-                    mServiceIsBound = bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-                }
+                showNewWayTracingDialog();
 
                 Log.i("Activity", Boolean.toString(mServiceIsBound));
                 break;
@@ -396,7 +433,8 @@ public class MapsActivity
                 dispatchTakePictureIntent();
                 break;
             case SHOW_WAYS_LIST:
-
+                hideMapFragment();
+                showWaysListFragment();
                 break;
             case SHOW_PLACES_LIST:
                 hideMapFragment();
@@ -424,8 +462,24 @@ public class MapsActivity
 
     @Override
     public View fillPlacesList(View view) {
-        setAdapters(view);
+        return setPlacesListAdapter(view);
+    }
 
-        return view;
+    @Override
+    public View fillWaysList(View view) {
+        return setWaysListAdapter(view);
+    }
+
+    @Override
+    public void start(TrackingWayRefBase tracingWay) {
+        if(!mServiceIsBound) {
+            showNewWayTracingDialog();
+
+            Intent intent = new Intent(getApplicationContext(), GPSWayTracker.class);
+            startService(intent);
+            mServiceIsBound = bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        }
+
+        mTracingWay = tracingWay;
     }
 }

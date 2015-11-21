@@ -14,6 +14,7 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.system.mrlukashem.Interfaces.MapManager;
 import com.system.mrlukashem.Interfaces.ServicesProvider;
+import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.utils.GPSListener;
 
 import java.util.ArrayList;
@@ -95,7 +96,7 @@ public class GPSWayTracker extends GPSListener {
         }
     }
 
-    public void setMapManager(@NonNull MapManager<TrackingWay> mapManager, @NonNull String wayTag) {
+    public void setMapManager(@NonNull MapManager<?> mapManager, @NonNull String wayTag) {
         mMapManager = mapManager;
         mWayTag = wayTag;
     }
