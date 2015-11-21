@@ -42,22 +42,31 @@ public class PlacesListAdapter extends ArrayAdapter<PlaceRefBase> {
         }
     }
 
-    public PlacesListAdapter(Context context, int resource, List<PlaceRefBase> elements) throws NullPointerException {
-        super(context, resource);
+    public PlacesListAdapter(Context context, int resource, PlaceRefBase[] elements) throws NullPointerException {
+        super(context, resource, elements);
 
         if (elements == null) {
             throw new NullPointerException();
         }
 
         mContext = context;
-        mElements.addAll(elements);
+
+        for(PlaceRefBase place : elements) {
+            mElements.add(place);
+        }
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //TODO: check this! Inflates is really mandatory?
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        View rowView = convertView;//inflater.inflate(R.layout.places_list_element, parent, false);
+
+        View rowView;
+        if(convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(mContext);
+            rowView = inflater.inflate(R.layout.places_list_element, parent, false);
+        } else {
+            rowView = convertView;
+        }
 
         PlaceRefBase place = mElements.get(position);
         if(place.isNil()) {
@@ -68,8 +77,8 @@ public class PlacesListAdapter extends ArrayAdapter<PlaceRefBase> {
         TextView desc = (TextView)rowView.findViewById(R.id.place_desc);
         ImageView img = (ImageView)rowView.findViewById(R.id.place_img);
 
-        title.setText(place.getName());
-        desc.setText(place.getDescription());
+ //       title.setText(place.getName());
+  //      desc.setText(place.getDescription());
         if(img.getDrawable() == null) {
             if(place.getPicPath().contains("http://")) {
                 bitmapLoader.getBitmapFromURL(place.getPicPath(), new CallbackHandler(img));

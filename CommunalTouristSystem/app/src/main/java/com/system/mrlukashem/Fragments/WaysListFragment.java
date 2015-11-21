@@ -10,12 +10,6 @@ import com.system.mrlukashem.communaltouristsystem.R;
 
 public class WaysListFragment extends Fragment {
 
-    public static WaysListFragment newInstance() {
-        WaysListFragment fragment = new WaysListFragment();
-
-        return fragment;
-    }
-
     public WaysListFragment() {
         // Required empty public constructor
     }

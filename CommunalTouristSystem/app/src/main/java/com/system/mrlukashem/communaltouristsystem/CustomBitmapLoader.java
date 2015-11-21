@@ -19,34 +19,7 @@ import java.net.URL;
  */
 public class CustomBitmapLoader extends BitmapLoader {
 
-    private AsyncTask<String, Void, Bitmap> mTask
-            = new AsyncTask<String, Void, Bitmap>() {
-
-        @Override
-        protected Bitmap doInBackground(String... paths) {
-            String path = paths[0];
-            Bitmap bitmap;
-            InputStream in = null;
-            try {
-                in = new URL(path).openStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("CustomBitmapLoader:", e.getMessage());
-            }
-
-            bitmap = BitmapFactory.decodeStream(in);
-
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            if(result != null) {
-                mCallback.bmpCallback(result);
-            }
-        }
-    };
-
+    private AsyncTask<String, Void, Bitmap> mTask;
 
     @Override
     public void getBitmapFromURL(@NonNull String url) {
@@ -56,6 +29,33 @@ public class CustomBitmapLoader extends BitmapLoader {
     @Override
     public void getBitmapFromURL(@NonNull String url, @NonNull BitmapCallback callback) {
         mCallback = callback;
+        mTask = new AsyncTask<String, Void, Bitmap>() {
+
+            @Override
+            protected Bitmap doInBackground(String... paths) {
+                String path = paths[0];
+                Bitmap bitmap;
+                InputStream in = null;
+                try {
+                    in = new URL(path).openStream();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("CustomBitmapLoader:", e.getMessage());
+                }
+
+                bitmap = BitmapFactory.decodeStream(in);
+
+                return bitmap;
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap result) {
+                if(result != null) {
+                    mCallback.bmpCallback(result);
+                }
+            }
+        };
+
         mTask.execute(url);
     }
 

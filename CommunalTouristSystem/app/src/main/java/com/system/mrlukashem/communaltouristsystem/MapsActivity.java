@@ -224,10 +224,13 @@ public class MapsActivity
 
     private void setAdapters(View rootView) {
         final ListView listView = (ListView)rootView.findViewById(R.id.placesListView);
+
+        PlaceRefBase[] placeRefBases = new PlaceRefBase[mMapManager.getPlacesList().size()];
+
         PlacesListAdapter adapter = new PlacesListAdapter(
                 getApplicationContext(),
                 R.layout.places_list_element,
-                mMapManager.getPlacesList());
+                mMapManager.getPlacesList().toArray(placeRefBases));
 
         listView.setAdapter(adapter);
     }
