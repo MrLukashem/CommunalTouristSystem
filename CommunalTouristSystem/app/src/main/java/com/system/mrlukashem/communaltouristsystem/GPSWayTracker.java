@@ -8,6 +8,7 @@ import android.os.IBinder;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.system.mrlukashem.Interfaces.ServicesProvider;
@@ -26,6 +27,10 @@ public class GPSWayTracker extends GPSListener {
     private List<LatLng> mLastKnownTrackedPoints;
 
     private List<LatLng> mTrackedPoints = new ArrayList<>();
+
+    private final String TAG = "GPSWayTracker";
+
+    private LocalBinder mLocalBinder = new LocalBinder();
 
     public GPSWayTracker() {
         super();
@@ -57,12 +62,14 @@ public class GPSWayTracker extends GPSListener {
     public void stopUsingGPS() {
         super.stopUsingGPS();
 
+        Log.i(TAG, "stopUsingGps");
         mLastKnownTrackedPoints = mTrackedPoints;
         mTrackedPoints = new ArrayList<>();
     }
 
     @Override
     public void onLocationChanged(Location location) {
+        Log.i(TAG, "onLocationChanged");
         LatLng newLocation
                 = new LatLng(location.getLatitude(), location.getLongitude());
         mTrackedPoints.add(newLocation);
@@ -86,7 +93,7 @@ public class GPSWayTracker extends GPSListener {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mLocalBinder;
     }
 
     public class LocalBinder extends Binder {

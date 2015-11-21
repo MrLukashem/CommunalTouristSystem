@@ -3,6 +3,7 @@ package com.system.mrlukashem.communaltouristsystem;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
@@ -38,6 +39,7 @@ import com.system.mrlukashem.Interfaces.ServicesProvider;
 import com.system.mrlukashem.datebase.DatabaseWrapper;
 import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.refbases.TrackingWayRefBase;
+import com.system.mrlukashem.utils.GPSListener;
 import com.system.mrlukashem.utils.XmlContentContainer;
 import com.system.mrlukashem.utils.XmlManager;
 import org.xmlpull.v1.XmlPullParserException;
@@ -85,6 +87,8 @@ public class MapsActivity
     private NavigationView mNavigationView;
 
     private GPSWayTracker mTrackerService;
+
+    private ServicesProvider mServicesProvider;
 
     private void initFragmentManagers() {
         mSupportFragmentManager = getSupportFragmentManager();
@@ -173,8 +177,10 @@ public class MapsActivity
                 mSupportFragmentManager.beginTransaction();
 
         Fragment mapFragment = mSupportFragmentManager.findFragmentByTag(mMapFragmentName);
-        fragmentTransaction.hide(mapFragment);
-        fragmentTransaction.commit();
+        if(!mapFragment.isVisible()) {
+            fragmentTransaction.hide(mapFragment);
+            fragmentTransaction.commit();
+        }
     }
 
     private void removeCurrentFragment() {
@@ -217,6 +223,11 @@ public class MapsActivity
         public void onServiceConnected(ComponentName name, IBinder service) {
             GPSWayTracker.LocalBinder localBinder = (GPSWayTracker.LocalBinder)service;
             mTrackerService = localBinder.getService();
+            try {
+                mTrackerService.startGPSListening(3000, 20, mServicesProvider);
+            } catch(GPSListener.GPSListenerException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -234,6 +245,7 @@ public class MapsActivity
         initMapFragment();
         initToolBar();
         initNavigationView();
+        mServicesProvider = this;
 
         try {
             String path = Environment.getExternalStorageDirectory().getPath() + "/xml_files/content.xml";
@@ -347,6 +359,8 @@ public class MapsActivity
             case WAY_TRACE:
                 Intent intent = new Intent(getApplicationContext(), GPSWayTracker.class);
                 startService(intent);
+                boolean res = bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+                Log.d("Activity", Boolean.toString(res));
                 break;
             case CAPTURE_PHOTO:
                 dispatchTakePictureIntent();

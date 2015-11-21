@@ -22,8 +22,15 @@ public abstract class GPSListener extends Service implements LocationListener {;
 
     protected LocationManager mLocationManager;
 
-    public void startGPSListening(int minTime, int minDistance) throws GPSListenerException {
+    private final String TAG = "GPSListener";
+
+    public void startGPSListening(int minTime, int minDistance, ServicesProvider provider) throws GPSListenerException {
         try {
+            if(provider != null) {
+                mServicesProvider = provider;
+            }
+
+            Log.i(TAG, "startGPSListening");
             mLocationManager = mServicesProvider.getLocationService();
             boolean isPassiveProviderEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
