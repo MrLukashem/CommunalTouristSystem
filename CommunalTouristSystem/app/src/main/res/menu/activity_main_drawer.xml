@@ -28,6 +28,16 @@
                 android:title="@string/way_trace"/>
 
             <item
+                android:id="@+id/nav_ways_list"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/ways_list"/>
+
+            <item
+                android:id="@+id/nav_places_list"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/places_list"/>
+
+            <item
                 android:id="@+id/nav_stop_way_trace"
                 android:title="@string/stop_way_trace"/>
 

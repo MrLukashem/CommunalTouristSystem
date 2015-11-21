@@ -22,60 +22,7 @@ public abstract class GPSListener extends Service implements LocationListener {;
 
     protected LocationManager mLocationManager;
 
-    private final String TAG = "GPSListener";
-
-    public void startGPSListening(int minTime, int minDistance, ServicesProvider provider) throws GPSListenerException {
-        try {
-            if(provider != null) {
-                mServicesProvider = provider;
-            }
-
-            Log.i(TAG, "startGPSListening");
-            mLocationManager = mServicesProvider.getLocationService();
-            boolean isPassiveProviderEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-            if(!isPassiveProviderEnabled) {
-                throw new GPSListenerException(NO_ENABLED_GPS_PROVIDER);
-            } else {
-                if(mLocationManager != null) {
-                    mLocationManager.requestLocationUpdates(
-                            LocationManager.PASSIVE_PROVIDER,
-                            minTime,
-                            minDistance,
-                            this);
-
-                    return;
-                }
-            }
-
-            boolean isGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            boolean isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if(!isGPSEnabled && !isNetworkEnabled) {
-                throw new GPSListenerException(NO_ENABLED_GPS_PROVIDER);
-            } else {
-                if(isGPSEnabled) {
-                    mLocationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER,
-                            minTime,
-                            minDistance,
-                            this);
-                }
-                else {
-                    mLocationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            minTime,
-                            minDistance,
-                            this);
-                }
-            }
-        } catch(Exception exc) {
-            Log.e("GPSListener:", "startGPSListening" + exc.toString());
-            exc.printStackTrace();
-
-            throw new GPSListenerException(exc.getMessage());
-        }
-    }
+    public abstract void startGPSListening(int minTime, int minDistance, ServicesProvider provider) throws GPSListenerException;
 
     public void stopUsingGPS() {
         if(mLocationManager != null) {

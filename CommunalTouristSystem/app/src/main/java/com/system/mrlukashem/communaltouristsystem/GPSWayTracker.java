@@ -2,6 +2,7 @@ package com.system.mrlukashem.communaltouristsystem;
 
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -41,18 +42,57 @@ public class GPSWayTracker extends GPSListener {
         super();
     }
 
-    public static GPSWayTracker getInstance() throws NullPointerException {
-        if(mGPSWayTracker.mServicesProvider == null) {
-            throw new NullPointerException(mGPSWayTracker.NO_SERVICES_PROVIDER_MSG);
+    public void startGPSListening(int minTime, int minDistance, ServicesProvider provider) throws GPSListenerException {
+        try {
+            if(provider != null) {
+                mServicesProvider = provider;
+            }
+
+            Log.i(TAG, "startGPSListening");
+            mLocationManager = mServicesProvider.getLocationService();
+            boolean isPassiveProviderEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            if(!isPassiveProviderEnabled) {
+                throw new GPSListenerException(NO_ENABLED_GPS_PROVIDER);
+            } else {
+                if(mLocationManager != null) {
+                    mLocationManager.requestLocationUpdates(
+                            LocationManager.PASSIVE_PROVIDER,
+                            minTime,
+                            minDistance,
+                            this);
+
+                    return;
+                }
+            }
+
+            boolean isGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            boolean isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if(!isGPSEnabled && !isNetworkEnabled) {
+                throw new GPSListenerException(NO_ENABLED_GPS_PROVIDER);
+            } else {
+                if(isGPSEnabled) {
+                    mLocationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            minTime,
+                            minDistance,
+                            this);
+                }
+                else {
+                    mLocationManager.requestLocationUpdates(
+                            LocationManager.NETWORK_PROVIDER,
+                            minTime,
+                            minDistance,
+                            this);
+                }
+            }
+        } catch(Exception exc) {
+            Log.e("GPSListener:", "startGPSListening" + exc.toString());
+            exc.printStackTrace();
+
+            throw new GPSListenerException(exc.getMessage());
         }
-
-        return mGPSWayTracker;
-    }
-
-    public static GPSWayTracker getInstance(@NonNull ServicesProvider provider) {
-        mGPSWayTracker.mServicesProvider = provider;
-
-        return mGPSWayTracker;
     }
 
     public void setMapManager(@NonNull MapManager<TrackingWay> mapManager, @NonNull String wayTag) {

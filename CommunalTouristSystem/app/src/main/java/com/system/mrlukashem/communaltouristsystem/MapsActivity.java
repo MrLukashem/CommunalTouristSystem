@@ -33,7 +33,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.system.mrlukashem.Fragments.InfoFragment;
+import com.system.mrlukashem.Fragments.PlacesListFragment;
 import com.system.mrlukashem.Interfaces.FillContentCallback;
+import com.system.mrlukashem.Interfaces.FillPlacesListCallback;
 import com.system.mrlukashem.Interfaces.MapManager;
 import com.system.mrlukashem.Interfaces.ServicesProvider;
 import com.system.mrlukashem.datebase.DatabaseWrapper;
@@ -53,7 +55,8 @@ import java.util.List;
 
 public class MapsActivity
         extends AppCompatActivity
-        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener, FillContentCallback, ServicesProvider {
+        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener,
+        FillContentCallback, ServicesProvider, FillPlacesListCallback {
 
     private final String INFORMATIONS = "Informacje";
     private final String TERREIN_MAP = "Mapa terenu";
@@ -64,6 +67,8 @@ public class MapsActivity
     private final String CAPTURE_PHOTO = "Zrób zdjęcie";
     private final String SETTINGS = "Ustawienia";
     private final String LOAD_CONF_FILE = "Wczytaj plik konfiguracyjny";
+    private final String SHOW_WAYS_LIST = "Pokaż listę tras";
+    private final String SHOW_PLACES_LIST = "Pokaż listę miejsc";
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -180,7 +185,7 @@ public class MapsActivity
                 mSupportFragmentManager.beginTransaction();
 
         Fragment mapFragment = mSupportFragmentManager.findFragmentByTag(mMapFragmentName);
-        if(!mapFragment.isVisible()) {
+        if(mapFragment.isVisible()) {
             fragmentTransaction.hide(mapFragment);
             fragmentTransaction.commit();
         }
@@ -203,15 +208,21 @@ public class MapsActivity
         fragmentTransaction.commit();
     }
 
+    private void showPlacesListFragment() {
+        FragmentTransaction fragmentTransaction =
+                mFragmentManager.beginTransaction();
+
+        mCurrentFragment = new PlacesListFragment();
+        fragmentTransaction.add(R.id.content_container, mCurrentFragment);
+        fragmentTransaction.commit();
+    }
+
     private void pushElementsOnMap() {
         List<PlaceRefBase> list = XmlContentContainer.getInstance().getPlacesList();
         mMapManager.pushElement(list.get(0), "center");
     }
 
-    private void setAdapters() {
-        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
-        View rootView = inflater.inflate(R.layout.places_list_view, null);
-
+    private void setAdapters(View rootView) {
         final ListView listView = (ListView)rootView.findViewById(R.id.placesListView);
         PlacesListAdapter adapter = new PlacesListAdapter(
                 getApplicationContext(),
@@ -227,7 +238,7 @@ public class MapsActivity
             GPSWayTracker.LocalBinder localBinder = (GPSWayTracker.LocalBinder)service;
             mTrackerService = localBinder.getService();
             try {
-                mTrackerService.startGPSListening(1000, 20, mServicesProvider);
+                mTrackerService.startGPSListening(1000, 0, mServicesProvider);
             } catch(GPSListener.GPSListenerException e) {
                 e.printStackTrace();
             }
@@ -276,7 +287,7 @@ public class MapsActivity
 
   //          databaseWrapper.put(trackingWayRefBase);
 
-            databaseWrapper.read(trackingWayRefBase, "droga");
+   //         databaseWrapper.read(trackingWayRefBase, "droga");
         } catch (SQLException exc) {
             exc.printStackTrace();
         }
@@ -308,7 +319,6 @@ public class MapsActivity
         initMapManager();
 
         pushElementsOnMap();
-        setAdapters();
     }
 
     @Override
@@ -382,6 +392,13 @@ public class MapsActivity
             case CAPTURE_PHOTO:
                 dispatchTakePictureIntent();
                 break;
+            case SHOW_WAYS_LIST:
+
+                break;
+            case SHOW_PLACES_LIST:
+                hideMapFragment();
+                showPlacesListFragment();
+                break;
             case SETTINGS:
                 break;
             case LOAD_CONF_FILE:
@@ -400,5 +417,12 @@ public class MapsActivity
         LocationManager locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
 
         return locationManager;
+    }
+
+    @Override
+    public View fillPlacesList(View view) {
+        setAdapters(view);
+
+        return view;
     }
 }

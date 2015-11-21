@@ -17,6 +17,8 @@
     <string name="capture_photo">Zrób zdjęcie</string>
     <string name="settings">Ustawienia</string>
     <string name="load_conf_file">Wczytaj plik konfiguracyjny</string>
+    <string name="ways_list">Pokaż listę tras</string>
+    <string name="places_list">Pokaż listę miejsc</string>
 
     <string name="others">Inne</string>
 
