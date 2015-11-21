@@ -182,4 +182,26 @@ public class CustomMapManager implements MapManager<PlaceRefBase> {
 
         return updateTrackingWay(list, tag);
     }
+
+    @Override
+    public List<PlaceRefBase> getPlacesList() {
+        List<PlaceRefBase> list = new ArrayList<>();
+
+        for(Map.Entry<String, Pair<PlaceRefBase, Marker>> entry : mPlacesMap.entrySet()) {
+            list.add(entry.getValue().first);
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<TrackingWayRefBase> getTrackingWaysList() {
+        List<TrackingWayRefBase> list = new ArrayList<>();
+
+        for(Map.Entry<String, Pair<TrackingWayRefBase, Polyline>> entry : mTrackingWayMap.entrySet()) {
+           list.add(entry.getValue().first);
+        }
+
+        return list;
+    }
 }

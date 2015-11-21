@@ -16,6 +16,26 @@ public abstract class TrackingWayRefBase {
 
     private String mTag = "";
 
+    private String mTitle;
+
+    private String mDescription;
+
+    public void setTitle(@NonNull String title) {
+        mTitle = title;
+    }
+
+    public void setDescription(@NonNull String description) {
+        mDescription = description;
+    }
+
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public String getDescription() {
+        return mDescription;
+    }
+
     public String getTag() {
         return mTag;
     }

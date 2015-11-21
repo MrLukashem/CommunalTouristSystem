@@ -2,10 +2,13 @@ package com.system.mrlukashem.communaltouristsystem;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.location.LocationManager;
 import android.os.Environment;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -17,9 +20,11 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -78,6 +83,8 @@ public class MapsActivity
     private ActionBarDrawerToggle mToogle;
 
     private NavigationView mNavigationView;
+
+    private GPSWayTracker mTrackerService;
 
     private void initFragmentManagers() {
         mSupportFragmentManager = getSupportFragmentManager();
@@ -192,6 +199,32 @@ public class MapsActivity
         mMapManager.pushElement(list.get(0), "center");
     }
 
+    private void setAdapters() {
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+        View rootView = inflater.inflate(R.layout.places_list_view, null);
+
+        final ListView listView = (ListView)rootView.findViewById(R.id.placesListView);
+        PlacesListAdapter adapter = new PlacesListAdapter(
+                getApplicationContext(),
+                R.layout.places_list_element,
+                mMapManager.getPlacesList());
+
+        listView.setAdapter(adapter);
+    }
+
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            GPSWayTracker.LocalBinder localBinder = (GPSWayTracker.LocalBinder)service;
+            mTrackerService = localBinder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mTrackerService = null;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -226,7 +259,7 @@ public class MapsActivity
 
             trackingWayRefBase.setTag("droga");
 
-            databaseWrapper.put(trackingWayRefBase);
+  //          databaseWrapper.put(trackingWayRefBase);
 
             databaseWrapper.read(trackingWayRefBase, "droga");
         } catch (SQLException exc) {
@@ -260,6 +293,7 @@ public class MapsActivity
         initMapManager();
 
         pushElementsOnMap();
+        setAdapters();
     }
 
     @Override
@@ -306,13 +340,16 @@ public class MapsActivity
                 showMapFragment();
                 break;
             case SATELITE_MAP:
-                dispatchTakePictureIntent();
+
                 break;
             case SHOW_CURRENT_POS:
                 break;
             case WAY_TRACE:
+                Intent intent = new Intent(getApplicationContext(), GPSWayTracker.class);
+                startService(intent);
                 break;
             case CAPTURE_PHOTO:
+                dispatchTakePictureIntent();
                 break;
             case SETTINGS:
                 break;

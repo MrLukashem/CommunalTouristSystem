@@ -2,6 +2,7 @@ package com.system.mrlukashem.communaltouristsystem;
 
 import android.content.Intent;
 import android.location.Location;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 
@@ -86,5 +87,11 @@ public class GPSWayTracker extends GPSListener {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public class LocalBinder extends Binder {
+        public GPSWayTracker getService() {
+            return GPSWayTracker.this;
+        }
     }
 }

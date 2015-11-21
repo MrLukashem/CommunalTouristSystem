@@ -42,7 +42,7 @@ public class PlacesListAdapter extends ArrayAdapter<PlaceRefBase> {
         }
     }
 
-    public PlacesListAdapter(Context context, int resource, PlaceRefBase[] elements) throws NullPointerException {
+    public PlacesListAdapter(Context context, int resource, List<PlaceRefBase> elements) throws NullPointerException {
         super(context, resource);
 
         if (elements == null) {
@@ -50,7 +50,7 @@ public class PlacesListAdapter extends ArrayAdapter<PlaceRefBase> {
         }
 
         mContext = context;
-        mElements.addAll(Arrays.asList(elements));
+        mElements.addAll(elements);
     }
 
     @Override

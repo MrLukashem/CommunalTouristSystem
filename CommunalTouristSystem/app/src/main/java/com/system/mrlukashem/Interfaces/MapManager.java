@@ -3,6 +3,7 @@ package com.system.mrlukashem.Interfaces;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
+import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.refbases.TrackingWayRefBase;
 
 import java.util.List;
@@ -29,4 +30,8 @@ public interface MapManager <T> {
     boolean updateTrackingWay(List<LatLng> points, String tag);
 
     boolean updateTrackingWay(LatLng point, String tag);
+
+    List<PlaceRefBase> getPlacesList();
+
+    List<TrackingWayRefBase> getTrackingWaysList();
 }
