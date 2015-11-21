@@ -60,6 +60,7 @@ public class MapsActivity
     private final String SATELITE_MAP = "Mapa satelita";
     private final String SHOW_CURRENT_POS = "Pokaż aktualna pozycję";
     private final String WAY_TRACE = "Sledź trasę";
+    private final String STOP_WAY_TRACE = "Zatrzymaj śledzenie trasy";
     private final String CAPTURE_PHOTO = "Zrób zdjęcie";
     private final String SETTINGS = "Ustawienia";
     private final String LOAD_CONF_FILE = "Wczytaj plik konfiguracyjny";
@@ -89,6 +90,8 @@ public class MapsActivity
     private GPSWayTracker mTrackerService;
 
     private ServicesProvider mServicesProvider;
+
+    private boolean mServiceIsBound = false;
 
     private void initFragmentManagers() {
         mSupportFragmentManager = getSupportFragmentManager();
@@ -224,7 +227,7 @@ public class MapsActivity
             GPSWayTracker.LocalBinder localBinder = (GPSWayTracker.LocalBinder)service;
             mTrackerService = localBinder.getService();
             try {
-                mTrackerService.startGPSListening(3000, 20, mServicesProvider);
+                mTrackerService.startGPSListening(1000, 20, mServicesProvider);
             } catch(GPSListener.GPSListenerException e) {
                 e.printStackTrace();
             }
@@ -357,10 +360,24 @@ public class MapsActivity
             case SHOW_CURRENT_POS:
                 break;
             case WAY_TRACE:
-                Intent intent = new Intent(getApplicationContext(), GPSWayTracker.class);
-                startService(intent);
-                boolean res = bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-                Log.d("Activity", Boolean.toString(res));
+                if(!mServiceIsBound) {
+                    Intent intent = new Intent(getApplicationContext(), GPSWayTracker.class);
+                    startService(intent);
+                    mServiceIsBound = bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+                }
+
+                Log.i("Activity", Boolean.toString(mServiceIsBound));
+                break;
+            case STOP_WAY_TRACE:
+                if(mTrackerService != null && mServiceIsBound) {
+                    mTrackerService.stopUsingGPS();
+                    List<LatLng> points = mTrackerService.getLastKnownTrackedPoints();
+
+                    unbindService(mServiceConnection);
+                    stopService(new Intent(getApplicationContext(), GPSWayTracker.class));
+
+                    mServiceIsBound = false;
+                }
                 break;
             case CAPTURE_PHOTO:
                 dispatchTakePictureIntent();

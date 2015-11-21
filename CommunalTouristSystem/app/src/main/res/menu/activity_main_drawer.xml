@@ -3,41 +3,46 @@
 
     <group android:checkableBehavior="single">
         <item
-                android:id="@+id/nav_info"
-                android:icon="@drawable/ic_menu_camera"
-                android:title="@string/informations"/>
+            android:id="@+id/nav_info"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/informations"/>
         <item
-                android:id="@+id/nav_terrain_map"
-                android:icon="@drawable/ic_menu_gallery"
-                android:title="@string/terrain_map"/>
+            android:id="@+id/nav_terrain_map"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="@string/terrain_map"/>
         <item
-                android:id="@+id/nav_satelite_map"
-                android:icon="@drawable/ic_menu_slideshow"
-                android:title="@string/satelite_map"/>
+            android:id="@+id/nav_satelite_map"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="@string/satelite_map"/>
     </group>
 
     <item android:title="@string/others">
         <menu>
             <item
-                    android:id="@+id/nav_show_current_pos"
-                    android:icon="@drawable/ic_menu_manage"
-                    android:title="@string/show_current_pos"/>
+                android:id="@+id/nav_show_current_pos"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/show_current_pos"/>
             <item
-                    android:id="@+id/nav_way_trace"
-                    android:icon="@drawable/ic_menu_share"
-                    android:title="@string/way_trace"/>
+                android:id="@+id/nav_way_trace"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/way_trace"/>
+
             <item
-                    android:id="@+id/nav_capture_photo"
-                    android:icon="@drawable/ic_menu_send"
-                    android:title="@string/capture_photo"/>
+                android:id="@+id/nav_stop_way_trace"
+                android:title="@string/stop_way_trace"/>
+
             <item
-                    android:id="@+id/nav_settings"
-                    android:icon="@drawable/ic_menu_share"
-                    android:title="@string/settings"/>
+                android:id="@+id/nav_capture_photo"
+                android:icon="@drawable/ic_menu_send"
+                android:title="@string/capture_photo"/>
             <item
-                    android:id="@+id/nav_load_conf_file"
-                    android:icon="@drawable/ic_menu_share"
-                    android:title="@string/load_conf_file"/>
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/settings"/>
+            <item
+                android:id="@+id/nav_load_conf_file"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/load_conf_file"/>
         </menu>
     </item>
 

@@ -13,6 +13,7 @@
     <string name="satelite_map">Mapa satelita</string>
     <string name="show_current_pos">Pokaż aktualną pozycję</string>
     <string name="way_trace">Sledź trasę</string>
+    <string name="stop_way_trace">Zatrzymaj śledzenie trasy</string>
     <string name="capture_photo">Zrób zdjęcie</string>
     <string name="settings">Ustawienia</string>
     <string name="load_conf_file">Wczytaj plik konfiguracyjny</string>

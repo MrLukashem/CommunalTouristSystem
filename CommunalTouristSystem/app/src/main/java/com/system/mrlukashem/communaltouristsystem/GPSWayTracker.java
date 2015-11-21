@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.system.mrlukashem.Interfaces.MapManager;
 import com.system.mrlukashem.Interfaces.ServicesProvider;
 import com.system.mrlukashem.utils.GPSListener;
 
@@ -32,6 +33,10 @@ public class GPSWayTracker extends GPSListener {
 
     private LocalBinder mLocalBinder = new LocalBinder();
 
+    private MapManager mMapManager;
+
+    private String mWayTag;
+
     public GPSWayTracker() {
         super();
     }
@@ -48,6 +53,11 @@ public class GPSWayTracker extends GPSListener {
         mGPSWayTracker.mServicesProvider = provider;
 
         return mGPSWayTracker;
+    }
+
+    public void setMapManager(@NonNull MapManager<TrackingWay> mapManager, @NonNull String wayTag) {
+        mMapManager = mapManager;
+        mWayTag = wayTag;
     }
 
     public List<LatLng> getLastKnownTrackedPoints() {
@@ -73,6 +83,13 @@ public class GPSWayTracker extends GPSListener {
         LatLng newLocation
                 = new LatLng(location.getLatitude(), location.getLongitude());
         mTrackedPoints.add(newLocation);
+
+        if(mMapManager != null) {
+            mMapManager.updateTrackingWay(
+                    new LatLng(location.getLatitude(), location.getLongitude()),
+                    mWayTag
+            );
+        }
     }
 
     @Override
