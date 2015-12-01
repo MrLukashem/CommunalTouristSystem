@@ -58,10 +58,12 @@ public class GPSWayTracker extends GPSListener {
             } else {
                 if(mLocationManager != null) {
                     mLocationManager.requestLocationUpdates(
-                            LocationManager.PASSIVE_PROVIDER,
+                            LocationManager.NETWORK_PROVIDER,
                             minTime,
                             minDistance,
                             this);
+
+                    mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
                     return;
                 }
@@ -126,26 +128,36 @@ public class GPSWayTracker extends GPSListener {
         mTrackedPoints.add(newLocation);
 
         if(mMapManager != null) {
-            mMapManager.updateTrackingWay(
-                    new LatLng(location.getLatitude(), location.getLongitude()),
-                    mWayTag
-            );
+            boolean result = mMapManager.updateTrackingWay(
+                                new LatLng(location.getLatitude(), location.getLongitude()),
+                                mWayTag
+                            );
+
+            if(!result) {
+                List<LatLng> list = new ArrayList<>();
+                list.add(new LatLng(location.getLatitude(), location.getLongitude()));
+
+                mMapManager.pushNewTrackingWay(
+                        list,
+                        mWayTag
+                );
+            }
         }
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
+        Log.i(TAG, "onStatusChanged");
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-
+        Log.i(TAG, "onStatusChanged");
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-
+        Log.i(TAG, "onStatusChanged");
     }
 
     @Nullable

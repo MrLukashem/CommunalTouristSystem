@@ -6,6 +6,7 @@ import android.util.Pair;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -27,13 +28,17 @@ import java.util.Map;
 /**
  * Created by mrlukashem on 08.11.15.
  */
-public class CustomMapManager implements MapManager<PlaceRefBase> {
+public class CustomMapManager implements MapManager<PlaceRefBase>, GoogleMap.OnCameraChangeListener {
 
     private final String ERROR_MAP_NULL = "You have to set GoogleMap instance, It can not be null!";
 
-    private final int DEFAULT_POLYLINE_WIDTH = 5;
+    private final int DEFAULT_POLYLINE_WIDTH = 50;
 
     private GoogleMap mMap;
+
+    private float mLastZoomLevel;
+
+    private float mPolylineSize = .0f;
 
     private static CustomMapManager mInstance = new CustomMapManager();
 
@@ -45,8 +50,18 @@ public class CustomMapManager implements MapManager<PlaceRefBase> {
 
     private CustomMapManager() {}
 
+    private void refreshPolylinesOnMap(float polylineWidth) {
+        for(Map.Entry<String, Pair<TrackingWayRefBase, Polyline>> entry : mTrackingWayMap.entrySet()) {
+            entry.getValue().second.setWidth(polylineWidth);
+        }
+    }
+
     public static void setGoogleMap(@NonNull GoogleMap map) {
         mInstance.mMap = map;
+        mInstance.mMap.setOnCameraChangeListener(mInstance);
+
+        float zoom = mInstance.mMap.getCameraPosition().zoom;
+        mInstance.mPolylineSize = zoom * 30;
     }
 
     public static CustomMapManager getInstance() throws NullPointerException {
@@ -120,6 +135,7 @@ public class CustomMapManager implements MapManager<PlaceRefBase> {
             return false;
         }
 
+        float size = mPolylineSize;
         PolylineOptions options
                 = new PolylineOptions()
                 .addAll(points)
@@ -152,7 +168,7 @@ public class CustomMapManager implements MapManager<PlaceRefBase> {
     public boolean updateTrackingWay(List<LatLng> points, String tag) {
         Pair<TrackingWayRefBase, Polyline> result = mTrackingWayMap.get(tag);
 
-        if(result != null && !result.first.isNill()) {
+        if(result == null || result.first.isNill()) {
             return false;
         }
 
@@ -203,5 +219,17 @@ public class CustomMapManager implements MapManager<PlaceRefBase> {
         }
 
         return list;
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+        float diff = mLastZoomLevel - cameraPosition.zoom;
+        if(diff < 0) {
+            mPolylineSize -= diff; //TODO: better algorithm.
+        } else if(diff > 0) {
+            mPolylineSize += diff;
+        }
+
+        //refreshPolylinesOnMap(mPolylineSize);
     }
 }

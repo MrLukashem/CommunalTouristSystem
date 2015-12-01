@@ -25,6 +25,10 @@ public class TrackingWayDescriptionDialog extends DialogFragment {
 
     private StartWayTracingCallback mStartWayTracingCB;
 
+    private final String OK = "ok";
+
+    private final String NO = "NO";
+
     public static TrackingWayDescriptionDialog newInstance(TrackingWayRefBase way) {
         if(way.isNill()) {
            throw new IllegalArgumentException();
@@ -49,25 +53,26 @@ public class TrackingWayDescriptionDialog extends DialogFragment {
 
         builder
                 .setTitle(DIALOG_TITLE)
-                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                .setPositiveButton(OK, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mWay.setDescription(editDesc.getText().toString());
                         mWay.setTitle(editTitle.getText().toString());
+                        mWay.setTag(mWay.getTitle());
 
-                        mStartWayTracingCB.start();
+                        mStartWayTracingCB.start(mWay);
+                        dialog.dismiss();
                     }
                 })
-                .setPositiveButton("no", new DialogInterface.OnClickListener() {
+                .setNegativeButton(NO, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();;
+                        dialog.dismiss();
                     }
                 });
 
-        Dialog dialog = builder.create();
-        dialog.setContentView(R.layout.dialog_layout);
+        builder.setView(R.layout.dialog_layout);
 
-        return dialog;
+        return builder.create();
     }
 }

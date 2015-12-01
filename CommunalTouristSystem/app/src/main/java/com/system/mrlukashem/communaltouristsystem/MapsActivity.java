@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -357,6 +358,8 @@ public class MapsActivity
         //TODO: Moving camera onMapReady for place includes in xml file. Example: moveCamera(CameraUpdateFactory.newLatLng(new_place_latlng));
         mMap = googleMap;
         mMap.setInfoWindowAdapter(new CustomInfoWindow(getApplicationContext()));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(51.1205124, 17.0370001)));
+        mMap.moveCamera(CameraUpdateFactory.zoomBy(16));
         initMapManager();
 
         pushElementsOnMap();
@@ -473,8 +476,6 @@ public class MapsActivity
     @Override
     public void start(TrackingWayRefBase tracingWay) {
         if(!mServiceIsBound) {
-            showNewWayTracingDialog();
-
             Intent intent = new Intent(getApplicationContext(), GPSWayTracker.class);
             startService(intent);
             mServiceIsBound = bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
