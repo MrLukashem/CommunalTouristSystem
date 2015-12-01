@@ -34,4 +34,6 @@ public interface MapManager <T> {
     List<PlaceRefBase> getPlacesList();
 
     List<TrackingWayRefBase> getTrackingWaysList();
+
+    boolean saveTracingWayInDB(String tag);
 }

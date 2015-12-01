@@ -61,7 +61,7 @@ public class CustomMapManager implements MapManager<PlaceRefBase>, GoogleMap.OnC
         mInstance.mMap.setOnCameraChangeListener(mInstance);
 
         float zoom = mInstance.mMap.getCameraPosition().zoom;
-        mInstance.mPolylineSize = zoom * 30;
+        mInstance.mPolylineSize = 700.0f / zoom;
     }
 
     public static CustomMapManager getInstance() throws NullPointerException {
@@ -219,6 +219,12 @@ public class CustomMapManager implements MapManager<PlaceRefBase>, GoogleMap.OnC
         }
 
         return list;
+    }
+
+    @Override
+    public boolean saveTracingWayInDB(String tag) {
+        return false;
+        //TODO: Fill this body.
     }
 
     @Override

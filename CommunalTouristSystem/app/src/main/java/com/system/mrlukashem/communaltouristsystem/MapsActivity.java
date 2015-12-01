@@ -358,8 +358,8 @@ public class MapsActivity
         //TODO: Moving camera onMapReady for place includes in xml file. Example: moveCamera(CameraUpdateFactory.newLatLng(new_place_latlng));
         mMap = googleMap;
         mMap.setInfoWindowAdapter(new CustomInfoWindow(getApplicationContext()));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(51.1205124, 17.0370001)));
-        mMap.moveCamera(CameraUpdateFactory.zoomBy(16));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.107885, 17.0370001), 16));
+    //    mMap.moveCamera(CameraUpdateFactory.zoomBy(16));
         initMapManager();
 
         pushElementsOnMap();
@@ -424,7 +424,7 @@ public class MapsActivity
             case STOP_WAY_TRACE:
                 if(mTrackerService != null && mServiceIsBound) {
                     mTrackerService.stopUsingGPS();
-                    List<LatLng> points = mTrackerService.getLastKnownTrackedPoints();
+                    mMapManager.saveTracingWayInDB(mTracingWay.getTag());
 
                     unbindService(mServiceConnection);
                     stopService(new Intent(getApplicationContext(), GPSWayTracker.class));
