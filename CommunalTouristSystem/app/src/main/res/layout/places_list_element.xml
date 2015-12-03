@@ -1,29 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/round"
+    android:layout_marginLeft="10dp"
+    android:layout_centerHorizontal="true"
+    android:layout_marginRight="10dp">
 
-    <android.widget.Space
-        android:layout_width="match_parent"
-        android:layout_height="50dp" />
+    <View android:id="@+id/strut"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#111"
-        android:layout_margin="4dp"
         android:id="@+id/place_title"
         android:text="testowy tytul"
-        android:layout_gravity="center" />
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#111"
         android:id="@+id/place_desc"
-        android:layout_margin="4dp"
         android:text="testowy content"
-        android:layout_gravity="center" />
+        android:layout_marginLeft="4dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="4dp"
+        android:layout_toRightOf="@id/place_title"
+        android:layout_marginEnd="41dp" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -31,4 +40,4 @@
         android:id="@+id/place_img"
         android:layout_margin="4dp"
         android:layout_gravity="center" />
-</LinearLayout>
+</RelativeLayout>
