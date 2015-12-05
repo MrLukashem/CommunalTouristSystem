@@ -13,10 +13,14 @@ public final class ReaderContract {
 
         public static final String TABLE_NAME = "trackingWayPoints";
 
+        public static final String DESC_TABLE_NAME = "descriptionWayPoints";
+
         public static final String COLUMN_NAME_ENTRY_ID = "tag";
 
         public static final String COLUMN_NAME_LAT = "lat";
 
         public static final String COLUMN_NAME_LNG = "lng";
+
+        public static final String COLUMN_NAME_DESC = "desc";
     }
 }

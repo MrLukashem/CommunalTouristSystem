@@ -7,12 +7,22 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import com.system.mrlukashem.Interfaces.TrackingWayDialogCallback;
 import com.system.mrlukashem.communaltouristsystem.R;
 
 /**
  * Created by mrlukashem on 05.12.15.
  */
 public class NoGpsEnableDialogFragment extends DialogFragment {
+
+    private void showNoGpsProviderDialog() {
+        ((TrackingWayDialogCallback)getActivity()).showDialog();
+    }
+
+    public static NoGpsEnableDialogFragment newInstance() {
+        NoGpsEnableDialogFragment dialog = new NoGpsEnableDialogFragment();
+        return dialog;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle __saved_instance_state) {
@@ -24,12 +34,16 @@ public class NoGpsEnableDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface __dialog, int __which) {
                         Intent _intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         getActivity().startActivity(_intent);
+                        showNoGpsProviderDialog();
+
                         dismiss();
                     }
                 })
                 .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface __dialog, int __which) {
+                        showNoGpsProviderDialog();
+
                         dismiss();
                     }
                 });

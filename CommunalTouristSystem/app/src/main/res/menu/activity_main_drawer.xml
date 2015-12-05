@@ -4,6 +4,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_info"
+            android:icon="@drawable/ic_menu_send"
             android:title="@string/informations"/>
         <item
             android:id="@+id/nav_terrain_map"
@@ -19,18 +20,22 @@
         <menu>
             <item
                 android:id="@+id/nav_way_trace"
+                android:icon="@drawable/ic_menu_send"
                 android:title="@string/way_trace"/>
 
             <item
                 android:id="@+id/nav_ways_list"
+                android:icon="@drawable/ic_menu_send"
                 android:title="@string/ways_list"/>
 
             <item
                 android:id="@+id/nav_places_list"
+                android:icon="@drawable/ic_menu_send"
                 android:title="@string/places_list"/>
 
             <item
                 android:id="@+id/nav_stop_way_trace"
+                android:icon="@drawable/ic_menu_send"
                 android:title="@string/stop_way_trace"/>
 
             <item

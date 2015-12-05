@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by mrlukashem on 14.11.15.
  */
-public class DatabaseWrapper {
+public class  DatabaseWrapper {
 
     private static final String ILLEGAL_ARGUMENT_MSG = "Not supported class!";
 
@@ -27,6 +27,8 @@ public class DatabaseWrapper {
     private static DatabaseWrapper mInstance;
 
     private static ReaderDbHelper mDbHelper;
+
+    private static final String EMPTY_STRING = "";
 
     public static void initDb(@NonNull Context context) throws SQLException {
         mDbHelper = new ReaderDbHelper(context);
@@ -83,6 +85,20 @@ public class DatabaseWrapper {
                 }
             }
 
+            ContentValues values = new ContentValues();
+            values.put(ReaderContract.Entry.COLUMN_NAME_ENTRY_ID, way.getTag());
+            values.put(ReaderContract.Entry.COLUMN_NAME_DESC, way.getDescription());
+
+            long rowId = db.insert(
+                    ReaderContract.Entry.DESC_TABLE_NAME,
+                    null,
+                    values);
+
+            if(rowId == -1) {
+                db.close();
+                return false;
+            }
+
             db.close();
             return true;
         } else {
@@ -133,6 +149,18 @@ public class DatabaseWrapper {
             } while (cursor.moveToNext());
 
             cursor.close();
+
+            select = "SELECT " + ReaderContract.Entry.COLUMN_NAME_DESC + " FROM "
+                    + ReaderContract.Entry.DESC_TABLE_NAME + " WHERE tag=" + "'" + tag + "';";
+
+            cursor = db.rawQuery(select, null);
+
+            if(cursor == null) {
+                way.setDescription(EMPTY_STRING);
+            } else {
+                way.setDescription(cursor.getString(1));
+            }
+
             db.close();
 
             return true;
@@ -141,12 +169,9 @@ public class DatabaseWrapper {
         }
     }
 
-    public void deleteWay(@NonNull String tag) throws SQLException {
-        //TODO: Need to test this function.
-        String delete = "DELETE * FROM " + ReaderContract.Entry.TABLE_NAME
-                + " WHERE tag=" + "'" + tag + "';";
-
+    public void deleteWays() throws SQLException {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
-        db.execSQL(delete);
+        db.execSQL(ReaderDbHelper.SQL_DELETE_POINTS_ENTRIES);
+        db.execSQL(ReaderDbHelper.SQL_DELETE_DESC_ENTRIES);
     }
 }

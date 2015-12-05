@@ -30,16 +30,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
-import com.system.mrlukashem.Fragments.InfoFragment;
-import com.system.mrlukashem.Fragments.PlacesListFragment;
-import com.system.mrlukashem.Fragments.TrackingWayDescriptionDialog;
-import com.system.mrlukashem.Fragments.WaysListFragment;
-import com.system.mrlukashem.Interfaces.FillContentCallback;
-import com.system.mrlukashem.Interfaces.FillPlacesListCallback;
-import com.system.mrlukashem.Interfaces.FillWaysListCallback;
-import com.system.mrlukashem.Interfaces.MapManager;
-import com.system.mrlukashem.Interfaces.ServicesProvider;
-import com.system.mrlukashem.Interfaces.StartWayTracingCallback;
+import com.system.mrlukashem.Fragments.*;
+import com.system.mrlukashem.Interfaces.*;
 import com.system.mrlukashem.datebase.DatabaseWrapper;
 import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.refbases.TrackingWayRefBase;
@@ -59,7 +51,7 @@ public class MapsActivity
         extends AppCompatActivity
         implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener,
         FillContentCallback, ServicesProvider, FillPlacesListCallback, FillWaysListCallback,
-        StartWayTracingCallback {
+        StartWayTracingCallback, TrackingWayDialogCallback {
 
     private final String INFORMATIONS = "Informacje";
     private final String TERREIN_MAP = "Mapa terenu";
@@ -100,6 +92,8 @@ public class MapsActivity
     private ServicesProvider mServicesProvider;
 
     private boolean mServiceIsBound = false;
+
+    private boolean mConfFileIsLoaded = false;
 
     private TrackingWayRefBase mTracingWay = new TrackingWay();
 
@@ -285,8 +279,16 @@ public class MapsActivity
         }
     };
 
-    private void showNewWayTracingDialog() {
+    public void showNewWayTracingDialog() {
         TrackingWayDescriptionDialog.newInstance(new TrackingWay()).show(mFragmentManager, "showNewWayDialog");
+    }
+
+    private void showNoGpsProviderDialog() {
+        NoGpsEnableDialogFragment.newInstance().show(mFragmentManager, "showNoGpsDialog");
+    }
+
+    private void showNoConfFileDialog() {
+        NoConfFileLoadedDialog.newInstance().show(mFragmentManager, "showNoConfFileDialog");
     }
 
     @Override
@@ -395,6 +397,11 @@ public class MapsActivity
             case INFORMATIONS:
                 hideMapFragment();
                 showInfoFragment();
+
+                if(!mConfFileIsLoaded) {
+                    showNoConfFileDialog();
+                }
+
                 break;
             case TERREIN_MAP:
                 removeCurrentFragment();
@@ -409,7 +416,11 @@ public class MapsActivity
             case SHOW_CURRENT_POS:
                 break;
             case WAY_TRACE:
-                showNewWayTracingDialog();
+                if(!getLocationService().isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    showNoGpsProviderDialog();
+                } else {
+                    showNewWayTracingDialog();
+                }
 
                 Log.i("Activity", Boolean.toString(mServiceIsBound));
                 break;
@@ -438,6 +449,7 @@ public class MapsActivity
             case SETTINGS:
                 break;
             case LOAD_CONF_FILE:
+                mConfFileIsLoaded = true;
                 break;
         }
         return true;
@@ -474,5 +486,10 @@ public class MapsActivity
         }
 
         mTracingWay = tracingWay;
+    }
+
+    @Override
+    public void showDialog() {
+        showNewWayTracingDialog();
     }
 }

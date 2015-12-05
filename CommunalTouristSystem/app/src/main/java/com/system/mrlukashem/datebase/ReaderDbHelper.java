@@ -4,6 +4,7 @@ import android.content.Context;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.ContactsContract;
 
 import java.sql.SQLException;
 
@@ -35,8 +36,18 @@ public class ReaderDbHelper extends SQLiteOpenHelper {
             + ReaderContract.Entry.COLUMN_NAME_LNG + NUMBER_TYPE
             + RIGHT_BRACKET;
 
-    private static final String SQL_DELETE_ENTRIES =
+    private static final String SQL_CREATE_DESC_TABLE =
+            "CREATE TABLE " + ReaderContract.Entry.DESC_TABLE_NAME
+            + LEFT_BRACKET + ReaderContract.Entry.COLUMN_NAME_ENTRY_ID + TEXT_TYPE
+            + COMMA_SEP
+            + ReaderContract.Entry.COLUMN_NAME_DESC + TEXT_TYPE
+            + RIGHT_BRACKET;
+
+    public static final String SQL_DELETE_POINTS_ENTRIES =
             "DROP TABLE IF EXISTS " + ReaderContract.Entry.TABLE_NAME;
+
+    public static final String SQL_DELETE_DESC_ENTRIES =
+            "DROP TABLE IF EXISTS " + ReaderContract.Entry.DESC_TABLE_NAME;
 
 
     public ReaderDbHelper(Context context) throws SQLException {
@@ -46,6 +57,7 @@ public class ReaderDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
+        db.execSQL(SQL_CREATE_DESC_TABLE);
     }
 
     @Override
