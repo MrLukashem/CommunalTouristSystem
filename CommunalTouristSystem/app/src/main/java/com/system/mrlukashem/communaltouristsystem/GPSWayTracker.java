@@ -39,6 +39,19 @@ public class GPSWayTracker extends GPSListener {
 
     private String mWayTag;
 
+    private void requestLocationUpdates(int minTime, int minDistance) {
+        mLocationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                minTime,
+                minDistance,
+                this);
+        mLocationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                minTime,
+                minDistance,
+                this);
+    }
+
     public GPSWayTracker() {
         super();
     }
@@ -57,12 +70,7 @@ public class GPSWayTracker extends GPSListener {
                 throw new GPSListenerException(NO_ENABLED_GPS_PROVIDER);
             } else {
                 if(mLocationManager != null) {
-                    mLocationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            minTime,
-                            minDistance,
-                            this);
-
+                    requestLocationUpdates(minTime, minDistance);
                     mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
                     return;

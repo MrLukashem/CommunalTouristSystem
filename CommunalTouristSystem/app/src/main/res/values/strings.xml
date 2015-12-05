@@ -25,4 +25,16 @@
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="title_label_string">Nazwa trasy</string>
+    <string name="way_length_label_string">Długość trasy</string>
+    <string name="show_way_on_map">Pokaż trasę na mapie</string>
+    <string name="place_title_label_string">Nazwa miejsca</string>
+    <string name="show_place_on_map">Pokaż miejsce na mapie</string>
+    <string name="commune_name_label_string">Nazwa gminy</string>
+    <string name="commune_major_label_string">Burmistrz</string>
+    <string name="commune_history_label_string">Historia</string>
+    <string name="commune_placement_label_string">Położenie</string>
+    <string name="commune_others_label_string">Inne</string>
+    <string name="commune_places_label_string">Miejscowości należące do gminy</string>
 </resources>

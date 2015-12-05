@@ -1,49 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="5dp"
-        android:text="New Text"
-        android:id="@+id/communeName"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_margin="5dp"
+            android:text="@string/commune_name_label_string"
+            android:id="@+id/commune_name_label"/>
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="5dp"
-        android:text="New Text"
-        android:id="@+id/major"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/communeName"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@id/commune_name_label"/>
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="5dp"
-        android:text="New Text"
-        android:id="@+id/history"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/commune_name_label"
+            android:layout_margin="5dp"
+            android:text="@string/commune_major_label_string"
+            android:id="@+id/commune_major_label"/>
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="5dp"
-        android:text="New Text"
-        android:id="@+id/placement"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/commune_major_label"
+            android:layout_below="@id/communeName"
+            android:layout_margin="5dp"
+            android:id="@+id/major"/>
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="5dp"
-        android:text="New Text"
-        android:id="@+id/others"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/commune_major_label"
+            android:layout_margin="5dp"
+            android:text="@string/commune_history_label_string"
+            android:id="@+id/commune_history_label"/>
+
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="5dp"
-        android:text="New Text"
-        android:id="@+id/communalPlaces"/>
-</LinearLayout>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/commune_history_label"
+            android:layout_below="@id/major"
+            android:layout_margin="5dp"
+            android:id="@+id/history"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/commune_history_label"
+            android:layout_margin="5dp"
+            android:text="@string/commune_placement_label_string"
+            android:id="@+id/commune_placement_label"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/commune_placement_label"
+            android:layout_below="@id/history"
+            android:layout_margin="5dp"
+            android:id="@+id/placement"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/commune_placement_label"
+            android:layout_margin="5dp"
+            android:text="@string/commune_others_label_string"
+            android:id="@+id/commune_others_label"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/commune_others_label"
+            android:layout_below="@id/placement"
+            android:layout_margin="5dp"
+            android:id="@+id/others"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/commune_others_label"
+            android:layout_margin="5dp"
+            android:text="@string/commune_places_label_string"
+            android:id="@+id/commune_places_label"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/commune_places_label"
+            android:layout_below="@id/others"
+            android:layout_margin="5dp"
+            android:id="@+id/communalPlaces"/>
+</RelativeLayout>

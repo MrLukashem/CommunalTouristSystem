@@ -28,10 +28,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
 import com.system.mrlukashem.Fragments.InfoFragment;
 import com.system.mrlukashem.Fragments.PlacesListFragment;
@@ -359,7 +356,7 @@ public class MapsActivity
         mMap = googleMap;
         mMap.setInfoWindowAdapter(new CustomInfoWindow(getApplicationContext()));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.107885, 17.0370001), 16));
-    //    mMap.moveCamera(CameraUpdateFactory.zoomBy(16));
+        mMap.setMyLocationEnabled(true);
         initMapManager();
 
         pushElementsOnMap();
@@ -388,11 +385,6 @@ public class MapsActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
