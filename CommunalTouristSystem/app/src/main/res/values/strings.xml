@@ -37,4 +37,8 @@
     <string name="commune_placement_label_string">Położenie</string>
     <string name="commune_others_label_string">Inne</string>
     <string name="commune_places_label_string">Miejscowości należące do gminy</string>
+    <string name="NoGpsTitle">Gps nie jest włączony</string>
+    <string name="NoGpsMsg">Czy chcesz włączyć gps?</string>
+    <string name="ok">Tak</string>
+    <string name="cancel">Nie</string>
 </resources>

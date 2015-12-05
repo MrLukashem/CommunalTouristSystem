@@ -14,10 +14,10 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.system.mrlukashem.Interfaces.MapManager;
 import com.system.mrlukashem.Interfaces.ServicesProvider;
-import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.utils.GPSListener;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -29,7 +29,7 @@ public class GPSWayTracker extends GPSListener {
 
     private List<LatLng> mLastKnownTrackedPoints;
 
-    private List<LatLng> mTrackedPoints = new ArrayList<>();
+    private List<LatLng> mTrackedPoints = new LinkedList<>();
 
     private final String TAG = "GPSWayTracker";
 
@@ -64,39 +64,27 @@ public class GPSWayTracker extends GPSListener {
 
             Log.i(TAG, "startGPSListening");
             mLocationManager = mServicesProvider.getLocationService();
-            boolean isPassiveProviderEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-            if(!isPassiveProviderEnabled) {
-                throw new GPSListenerException(NO_ENABLED_GPS_PROVIDER);
-            } else {
-                if(mLocationManager != null) {
-                    requestLocationUpdates(minTime, minDistance);
-                    mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-                    return;
-                }
-            }
-
             boolean isGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             if(!isGPSEnabled && !isNetworkEnabled) {
                 throw new GPSListenerException(NO_ENABLED_GPS_PROVIDER);
-            } else {
-                if(isGPSEnabled) {
-                    mLocationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER,
-                            minTime,
-                            minDistance,
-                            this);
-                }
-                else {
-                    mLocationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            minTime,
-                            minDistance,
-                            this);
-                }
+            }
+
+            if(isGPSEnabled) {
+                mLocationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER,
+                        minTime,
+                        minDistance,
+                        this);
+            }
+
+            if(isNetworkEnabled) {
+                mLocationManager.requestLocationUpdates(
+                        LocationManager.NETWORK_PROVIDER,
+                        minTime,
+                        minDistance,
+                        this);
             }
         } catch(Exception exc) {
             Log.e("GPSListener:", "startGPSListening" + exc.toString());
@@ -104,6 +92,8 @@ public class GPSWayTracker extends GPSListener {
 
             throw new GPSListenerException(exc.getMessage());
         }
+
+        mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
     }
 
     public void setMapManager(@NonNull MapManager<?> mapManager, @NonNull String wayTag) {
@@ -131,6 +121,12 @@ public class GPSWayTracker extends GPSListener {
     @Override
     public void onLocationChanged(Location location) {
         Log.i(TAG, "onLocationChanged");
+
+        if(location.getAccuracy() >= 100.0) {
+            return;
+        }
+
+
         LatLng newLocation
                 = new LatLng(location.getLatitude(), location.getLongitude());
         mTrackedPoints.add(newLocation);
