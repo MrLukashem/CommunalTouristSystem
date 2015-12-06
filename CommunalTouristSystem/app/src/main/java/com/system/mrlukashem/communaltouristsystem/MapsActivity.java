@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MapsActivity
@@ -291,6 +292,20 @@ public class MapsActivity
         NoConfFileLoadedDialog.newInstance().show(mFragmentManager, "showNoConfFileDialog");
     }
 
+    private void loadDB() {
+        try {
+            DatabaseWrapper databaseWrapper = DatabaseWrapper.getInstanceAndInitDb(getApplicationContext());
+            List<TrackingWayRefBase> listToBeFilled = new LinkedList<>();
+            if(databaseWrapper.readAll(listToBeFilled)) {
+                for(TrackingWayRefBase way : listToBeFilled) {
+                    mMapManager.pushNewTrackingWay(way.getPoints(), way.getTag());
+                }
+            }
+        } catch (SQLException | IllegalArgumentException exc) {
+            exc.printStackTrace();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -302,26 +317,7 @@ public class MapsActivity
         initNavigationView();
         mServicesProvider = this;
 
-
-
-        try {
-            DatabaseWrapper databaseWrapper = DatabaseWrapper.getInstanceAndInitDb(getApplicationContext());
-
-            TrackingWayRefBase trackingWayRefBase = new TrackingWay();
-            List<LatLng> list = new ArrayList<>();
-            list.add(new LatLng(0, 1));
-            list.add(new LatLng(1, 1));
-            list.add(new LatLng(23, 11));
-            trackingWayRefBase.pushPoints(list);
-
-            trackingWayRefBase.setTag("droga");
-
-  //          databaseWrapper.put(trackingWayRefBase);
-
-   //         databaseWrapper.read(trackingWayRefBase, "droga");
-        } catch (SQLException exc) {
-            exc.printStackTrace();
-        }
+        loadDB();
     }
 
     @Override

@@ -8,9 +8,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.system.mrlukashem.communaltouristsystem.TrackingWay;
 import com.system.mrlukashem.refbases.TrackingWayRefBase;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -166,6 +169,42 @@ public class  DatabaseWrapper {
             return true;
         } else {
             throw  new IllegalArgumentException(ILLEGAL_ARGUMENT_MSG);
+        }
+    }
+
+    public <T> boolean readAll(List<T> mClassesToBeFilled) throws IllegalArgumentException, SQLException{
+        if(mClassesToBeFilled.get(0) instanceof TrackingWayRefBase) {
+            List<TrackingWayRefBase> list;
+            try {
+                list = (ArrayList<TrackingWayRefBase>) mClassesToBeFilled;
+            } catch (ClassCastException cce) {
+                try {
+                    list = (LinkedList<TrackingWayRefBase>)mClassesToBeFilled;
+                } catch (ClassCastException cce_sec) {
+                    throw new IllegalArgumentException(ILLEGAL_ARGUMENT_MSG);
+                }
+            }
+
+            SQLiteDatabase db = mDbHelper.getReadableDatabase();
+            String select = "SELECT * FROM " + ReaderContract.Entry.DESC_TABLE_NAME + ";";
+
+            Cursor cursor = db.rawQuery(select, null);
+            if(cursor == null) {
+                return false;
+            }
+
+            do {
+                String tag = cursor.getString(0);
+                list.add(new TrackingWay());
+                read(list.get(list.size() - 1), tag);
+            } while(cursor.moveToNext());
+
+            cursor.close();
+            db.close();
+
+            return true;
+        } else {
+            throw new IllegalArgumentException(ILLEGAL_ARGUMENT_MSG);
         }
     }
 
