@@ -33,6 +33,10 @@ public class GPSWayTracker extends GPSListener {
 
     private final String TAG = "GPSWayTracker";
 
+    private float mMinAccuracy = 50.0f;
+
+    private boolean mGpsIsFixed = false;
+
     private LocalBinder mLocalBinder = new LocalBinder();
 
     private MapManager mMapManager;
@@ -109,10 +113,15 @@ public class GPSWayTracker extends GPSListener {
     public void onLocationChanged(Location location) {
         Log.i(TAG, "onLocationChanged");
 
-        if(location.getAccuracy() >= 100.0) {
-            return;
+        String provider = location.getProvider();
+        if(!mGpsIsFixed && provider.equals(LocationManager.GPS_PROVIDER)) {
+            mGpsIsFixed = true;
+            mMinAccuracy = 10.0f;
         }
 
+        if(location.getAccuracy() >= mMinAccuracy) {
+            return;
+        }
 
         LatLng newLocation
                 = new LatLng(location.getLatitude(), location.getLongitude());

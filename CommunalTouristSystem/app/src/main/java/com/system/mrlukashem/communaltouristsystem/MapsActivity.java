@@ -51,7 +51,7 @@ public class MapsActivity
         extends AppCompatActivity
         implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener,
         FillContentCallback, ServicesProvider, FillPlacesListCallback, FillWaysListCallback,
-        StartWayTracingCallback, TrackingWayDialogCallback {
+        StartWayTracingCallback, TrackingWayDialogCallback, LoadConfFileCallback {
 
     private final String INFORMATIONS = "Informacje";
     private final String TERREIN_MAP = "Mapa terenu";
@@ -302,17 +302,7 @@ public class MapsActivity
         initNavigationView();
         mServicesProvider = this;
 
-        try {
-            String path = Environment.getExternalStorageDirectory().getPath() + "/xml_files/content.xml";
-            Log.d("important -->", path);
-            InputStream inputStream = new FileInputStream(path);
-            XmlManager xmlManager = XmlManager.newXmlManager(inputStream);
-            xmlManager.fillDataContainer();
 
-            inputStream.close();
-        } catch(IOException | XmlPullParserException exc) {
-            exc.printStackTrace();
-        }
 
         try {
             DatabaseWrapper databaseWrapper = DatabaseWrapper.getInstanceAndInitDb(getApplicationContext());
@@ -446,8 +436,6 @@ public class MapsActivity
                 hideMapFragment();
                 showPlacesListFragment();
                 break;
-            case SETTINGS:
-                break;
             case LOAD_CONF_FILE:
                 mConfFileIsLoaded = true;
                 break;
@@ -491,5 +479,20 @@ public class MapsActivity
     @Override
     public void showDialog() {
         showNewWayTracingDialog();
+    }
+
+    @Override
+    public void load(String path) {
+        try {
+            InputStream inputStream = new FileInputStream(path);
+            XmlManager xmlManager = XmlManager.newXmlManager(inputStream);
+            xmlManager.fillDataContainer();
+
+            inputStream.close();
+
+            mConfFileIsLoaded = true;
+        } catch(IOException | XmlPullParserException exc) {
+            exc.printStackTrace();
+        }
     }
 }
