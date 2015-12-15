@@ -161,7 +161,14 @@ public class  DatabaseWrapper {
             if(cursor == null) {
                 way.setDescription(EMPTY_STRING);
             } else {
-                way.setDescription(cursor.getString(1));
+                if(!cursor.moveToFirst()) {
+                    db.close();
+                    return false;
+                }
+
+                way.setDescription(cursor.getString(0));
+                way.setTag(tag);
+                way.setTitle(tag);
             }
 
             db.close();
@@ -172,8 +179,9 @@ public class  DatabaseWrapper {
         }
     }
 
-    public <T> boolean readAll(List<T> mClassesToBeFilled) throws IllegalArgumentException, SQLException{
+    public <T> boolean readAll(@NonNull List<T> mClassesToBeFilled) throws IllegalArgumentException, SQLException{
         if(mClassesToBeFilled.get(0) instanceof TrackingWayRefBase) {
+            mClassesToBeFilled.clear();
             List<TrackingWayRefBase> list;
             try {
                 list = (ArrayList<TrackingWayRefBase>) mClassesToBeFilled;
@@ -190,6 +198,10 @@ public class  DatabaseWrapper {
 
             Cursor cursor = db.rawQuery(select, null);
             if(cursor == null) {
+                return false;
+            }
+
+            if(!cursor.moveToFirst()) {
                 return false;
             }
 
@@ -212,5 +224,18 @@ public class  DatabaseWrapper {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         db.execSQL(ReaderDbHelper.SQL_DELETE_POINTS_ENTRIES);
         db.execSQL(ReaderDbHelper.SQL_DELETE_DESC_ENTRIES);
+    }
+
+    public void delete(String tag) throws SQLException {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        String remove = "DELETE FROM " + ReaderContract.Entry.DESC_TABLE_NAME
+                + " WHERE tag=" + "'" + tag + "';";
+        db.execSQL(remove);
+
+        remove = "DELETE FROM " + ReaderContract.Entry.TABLE_NAME
+                + " WHERE tag=" + "'" + tag + "';";
+        db.execSQL(remove);
+
+        db.close();
     }
 }

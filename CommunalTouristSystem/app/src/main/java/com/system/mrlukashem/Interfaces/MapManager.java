@@ -3,6 +3,7 @@ package com.system.mrlukashem.Interfaces;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
+import com.system.mrlukashem.datebase.DatabaseWrapper;
 import com.system.mrlukashem.refbases.PlaceRefBase;
 import com.system.mrlukashem.refbases.TrackingWayRefBase;
 
@@ -23,7 +24,9 @@ public interface MapManager <T> {
 
     LatLng getCordsByElementTag(String tag);
 
-    boolean pushNewTrackingWay(List<LatLng> points, String tag);
+    boolean pushNewTrackingWay(List<LatLng> points, String tag, String desc);
+
+    boolean pushNewTrackingWay(TrackingWayRefBase way);
 
     TrackingWayRefBase findTrackingWayByTag(String tag);
 
@@ -35,5 +38,5 @@ public interface MapManager <T> {
 
     List<TrackingWayRefBase> getTrackingWaysList();
 
-    boolean saveTracingWayInDB(String tag);
+    boolean saveTracingWayInDB(String tag, DatabaseWrapper databaseWrapper);
 }

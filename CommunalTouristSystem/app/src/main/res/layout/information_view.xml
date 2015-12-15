@@ -22,7 +22,7 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/commune_name_label"
+            android:layout_below="@id/communeName"
             android:layout_margin="5dp"
             android:text="@string/commune_major_label_string"
             android:id="@+id/commune_major_label"/>
@@ -38,7 +38,7 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/commune_major_label"
+            android:layout_below="@id/major"
             android:layout_margin="5dp"
             android:text="@string/commune_history_label_string"
             android:id="@+id/commune_history_label"/>
@@ -49,12 +49,13 @@
             android:layout_toEndOf="@id/commune_history_label"
             android:layout_below="@id/major"
             android:layout_margin="5dp"
-            android:id="@+id/history"/>
+
+        android:id="@+id/history"/>
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/commune_history_label"
+            android:layout_below="@id/history"
             android:layout_margin="5dp"
             android:text="@string/commune_placement_label_string"
             android:id="@+id/commune_placement_label"/>
@@ -70,7 +71,7 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/commune_placement_label"
+            android:layout_below="@id/placement"
             android:layout_margin="5dp"
             android:text="@string/commune_others_label_string"
             android:id="@+id/commune_others_label"/>
@@ -81,12 +82,13 @@
             android:layout_toEndOf="@id/commune_others_label"
             android:layout_below="@id/placement"
             android:layout_margin="5dp"
-            android:id="@+id/others"/>
+
+        android:id="@+id/others"/>
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/commune_others_label"
+            android:layout_below="@id/others"
             android:layout_margin="5dp"
             android:text="@string/commune_places_label_string"
             android:id="@+id/commune_places_label"/>

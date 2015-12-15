@@ -6,9 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.system.mrlukashem.Interfaces.BitmapCallback;
 import com.system.mrlukashem.refbases.BitmapLoader;
 import com.system.mrlukashem.refbases.PlaceRefBase;
@@ -68,7 +70,7 @@ public class PlacesListAdapter extends ArrayAdapter<PlaceRefBase> {
             rowView = convertView;
         }
 
-        PlaceRefBase place = mElements.get(position);
+        final PlaceRefBase place = mElements.get(position);
         if(place.isNil()) {
             return rowView;
         }
@@ -76,6 +78,18 @@ public class PlacesListAdapter extends ArrayAdapter<PlaceRefBase> {
         TextView title = (TextView)rowView.findViewById(R.id.place_title);
         TextView desc = (TextView)rowView.findViewById(R.id.place_desc);
         ImageView img = (ImageView)rowView.findViewById(R.id.place_img);
+        Button button = (Button)rowView.findViewById(R.id.showPlaceOnMapButton);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CustomMapManager
+                        .getInstance()
+                        .moveCamera(place.getCords());
+
+            }
+        });
+
 
         title.setText(place.getName());
         desc.setText(place.getDescription());

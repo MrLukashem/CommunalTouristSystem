@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.InputType;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import com.system.mrlukashem.Interfaces.LoadConfFileCallback;
 import com.system.mrlukashem.communaltouristsystem.R;
@@ -26,13 +28,15 @@ public class LoadConfFileDialog extends DialogFragment {
 
     private static final String ERROR_MSG = "Taki plik nie istnieje!";
 
+    private final String EMPTY_STRING = "";
+
     public static LoadConfFileDialog newInstance() {
         return new LoadConfFileDialog();
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         final LoadConfFileCallback cb = (LoadConfFileCallback)getActivity();
 
         final EditText input = new EditText(getActivity());
@@ -41,20 +45,7 @@ public class LoadConfFileDialog extends DialogFragment {
 
         builder
                 .setTitle(DIALOG_TITLE)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String filePath = Environment.getExternalStorageDirectory().getPath()
-                                + "/" + input.getText().toString();
-                        File file = new File(filePath);
-                        if(file.exists()) {
-                            cb.load(input.getText().toString());
-                            dialog.dismiss();
-                        } else {
-                            input.setError(ERROR_MSG);
-                        }
-                    }
-                })
+                .setPositiveButton(R.string.ok, null)
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -63,6 +54,28 @@ public class LoadConfFileDialog extends DialogFragment {
                 })
                 .setMessage(DIALOG_MSG);
 
-        return builder.create();
+        final AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface d) {
+                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String filePath = Environment.getExternalStorageDirectory().getPath()
+                                + "/" + input.getText().toString();
+                        File file = new File(filePath);
+                        if(!input.getText().toString().equals(EMPTY_STRING) && file.exists()) {
+                            cb.load(filePath);
+                            dialog.dismiss();
+                        } else {
+                            input.setError(ERROR_MSG);
+                        }
+                    }
+                });
+            }
+        });
+
+        return dialog;
     }
 }

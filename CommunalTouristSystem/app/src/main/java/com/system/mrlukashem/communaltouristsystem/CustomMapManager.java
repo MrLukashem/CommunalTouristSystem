@@ -6,6 +6,7 @@ import android.util.Pair;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -14,6 +15,8 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import com.system.mrlukashem.Interfaces.MapManager;
+import com.system.mrlukashem.Interfaces.MoveMapCameraCB;
+import com.system.mrlukashem.datebase.DatabaseWrapper;
 import com.system.mrlukashem.nullobjects.NullPlace;
 import com.system.mrlukashem.nullobjects.NullTrackingWay;
 import com.system.mrlukashem.refbases.PlaceRefBase;
@@ -32,7 +35,7 @@ public class CustomMapManager implements MapManager<PlaceRefBase>, GoogleMap.OnC
 
     private final String ERROR_MAP_NULL = "You have to set GoogleMap instance, It can not be null!";
 
-    private final int DEFAULT_POLYLINE_WIDTH = 50;
+    private final int DEFAULT_POLYLINE_WIDTH = 30;
 
     private GoogleMap mMap;
 
@@ -48,12 +51,21 @@ public class CustomMapManager implements MapManager<PlaceRefBase>, GoogleMap.OnC
     private Map<String, Pair<TrackingWayRefBase, Polyline>> mTrackingWayMap
             = new HashMap<>();
 
+    private Map<String, Marker> mWayTagMarkerMap
+            = new HashMap<>();
+
+    private MoveMapCameraCB mMoveCameraCB;
+
     private CustomMapManager() {}
 
     private void refreshPolylinesOnMap(float polylineWidth) {
         for(Map.Entry<String, Pair<TrackingWayRefBase, Polyline>> entry : mTrackingWayMap.entrySet()) {
             entry.getValue().second.setWidth(polylineWidth);
         }
+    }
+
+    public static void setMoveCB(MoveMapCameraCB cb) {
+        mInstance.mMoveCameraCB = cb;
     }
 
     public static void setGoogleMap(@NonNull GoogleMap map) {
@@ -130,7 +142,7 @@ public class CustomMapManager implements MapManager<PlaceRefBase>, GoogleMap.OnC
     }
 
     @Override
-    public boolean pushNewTrackingWay(@NonNull List<LatLng> points, @NonNull String tag) {
+    public boolean pushNewTrackingWay(@NonNull List<LatLng> points, @NonNull String tag, @NonNull String desc) {
         if(points.isEmpty()) {
             return false;
         }
@@ -146,7 +158,46 @@ public class CustomMapManager implements MapManager<PlaceRefBase>, GoogleMap.OnC
         TrackingWayRefBase trackingWay = new TrackingWay();
         trackingWay.pushPoints(points);
 
+        mTrackingWayMap.remove(tag);
         if(mTrackingWayMap.put(tag, new Pair<>(trackingWay, polyline)) == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean pushNewTrackingWay(@NonNull TrackingWayRefBase way) {
+        if(way.isNill()) {
+            return false;
+        }
+
+        float size = mPolylineSize;
+        PolylineOptions options
+                = new PolylineOptions()
+                .addAll(way.getPoints())
+                .width(DEFAULT_POLYLINE_WIDTH)
+                .color(Color.RED);
+
+        Polyline polyline = mMap.addPolyline(options);
+
+        if(mWayTagMarkerMap.get(way.getTag()) == null) {
+            String title = way.getTitle();
+            MarkerOptions markerOptions
+                    = new MarkerOptions()
+                    .position(way.getPoints().get(0))
+                    .title(way.getTitle())
+                    .snippet(way.getDescription())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+            Marker marker =  mMap.addMarker(markerOptions);
+            mWayTagMarkerMap.put(way.getTag(), marker);
+        }
+
+        TrackingWayRefBase trackingWay = way;
+
+        mTrackingWayMap.remove(way.getTag());
+        if(mTrackingWayMap.put(way.getTag() , new Pair<>(trackingWay, polyline)) == null) {
             return false;
         }
 
@@ -180,7 +231,7 @@ public class CustomMapManager implements MapManager<PlaceRefBase>, GoogleMap.OnC
 
             mTrackingWayMap.remove(tag);
             if(mTrackingWayMap.get(tag) == null) {
-                return pushNewTrackingWay(updatedPoints, tag);
+                return pushNewTrackingWay(result.first);
             }
         } catch (NullPointerException npe) {
             npe.printStackTrace();
@@ -198,6 +249,7 @@ public class CustomMapManager implements MapManager<PlaceRefBase>, GoogleMap.OnC
 
         return updateTrackingWay(list, tag);
     }
+
 
     @Override
     public List<PlaceRefBase> getPlacesList() {
@@ -222,9 +274,23 @@ public class CustomMapManager implements MapManager<PlaceRefBase>, GoogleMap.OnC
     }
 
     @Override
-    public boolean saveTracingWayInDB(String tag) {
-        return false;
-        //TODO: Fill this body.
+    public boolean saveTracingWayInDB(@NonNull String tag, @NonNull DatabaseWrapper databaseWrapper) {
+        TrackingWayRefBase trackingWayRefBase = mTrackingWayMap.get(tag).first;
+        if(trackingWayRefBase == null) {
+            return false;
+        }
+
+        boolean result;
+        try {
+            databaseWrapper.delete(tag);
+            result = databaseWrapper.put(trackingWayRefBase);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return false;
+        }
+
+        return result;
     }
 
     @Override
@@ -237,5 +303,19 @@ public class CustomMapManager implements MapManager<PlaceRefBase>, GoogleMap.OnC
         }
 
         //refreshPolylinesOnMap(mPolylineSize);
+    }
+
+    public boolean isTrackingWayMarker(Marker marker) {
+        for(Map.Entry<String, Marker> entry : mWayTagMarkerMap.entrySet()) {
+            if(entry.getValue().equals(marker)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void moveCamera(LatLng latLng) {
+        mMoveCameraCB.move(latLng);
     }
 }

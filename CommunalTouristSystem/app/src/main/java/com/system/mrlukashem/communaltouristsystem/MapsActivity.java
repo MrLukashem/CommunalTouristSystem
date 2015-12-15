@@ -52,7 +52,7 @@ public class MapsActivity
         extends AppCompatActivity
         implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener,
         FillContentCallback, ServicesProvider, FillPlacesListCallback, FillWaysListCallback,
-        StartWayTracingCallback, TrackingWayDialogCallback, LoadConfFileCallback {
+        StartWayTracingCallback, TrackingWayDialogCallback, LoadConfFileCallback, MoveMapCameraCB {
 
     private final String INFORMATIONS = "Informacje";
     private final String TERREIN_MAP = "Mapa terenu";
@@ -139,6 +139,7 @@ public class MapsActivity
         //TODO: A little changes in CustomMapManager architecture/
         try {
             CustomMapManager.setGoogleMap(mMap);
+            CustomMapManager.setMoveCB(this);
             mMapManager = CustomMapManager.getInstance();
         } catch(NullPointerException npe) {
             Log.e("initMapManager:" , npe.getMessage());
@@ -192,11 +193,13 @@ public class MapsActivity
     }
 
     private void removeCurrentFragment() {
-        FragmentTransaction fragmentTransaction =
-                mFragmentManager.beginTransaction();
+        if(mCurrentFragment != null) {
+            FragmentTransaction fragmentTransaction =
+                    mFragmentManager.beginTransaction();
 
-        fragmentTransaction.remove(mCurrentFragment);
-        fragmentTransaction.commit();
+            fragmentTransaction.remove(mCurrentFragment);
+            fragmentTransaction.commit();
+        }
     }
 
     private void showInfoFragment() {
@@ -228,7 +231,10 @@ public class MapsActivity
 
     private void pushElementsOnMap() {
         List<PlaceRefBase> list = XmlContentContainer.getInstance().getPlacesList();
-        mMapManager.pushElement(list.get(0), "center");
+
+        for(PlaceRefBase placeRefBase : list) {
+            mMapManager.pushElement(placeRefBase, placeRefBase.getName());
+        }
     }
 
     private View setPlacesListAdapter(View rootView) {
@@ -253,8 +259,8 @@ public class MapsActivity
 
         WaysListAdapter adapter = new WaysListAdapter(
                 getApplicationContext(),
-                R.layout.places_list_element,
-                mMapManager.getPlacesList().toArray(waysRefBases));
+                R.layout.ways_list_element,
+                mMapManager.getTrackingWaysList().toArray(waysRefBases));
 
         listView.setAdapter(adapter);
 
@@ -267,7 +273,7 @@ public class MapsActivity
             GPSWayTracker.LocalBinder localBinder = (GPSWayTracker.LocalBinder)service;
             mTrackerService = localBinder.getService();
             try {
-                mTrackerService.setMapManager(mMapManager, mTracingWay.getTag());
+                mTrackerService.setMapManager(mMapManager, mTracingWay.getTag(), mTracingWay.getDescription());
                 mTrackerService.startGPSListening(1000, 0, mServicesProvider);
             } catch(GPSListener.GPSListenerException e) {
                 e.printStackTrace();
@@ -296,9 +302,10 @@ public class MapsActivity
         try {
             DatabaseWrapper databaseWrapper = DatabaseWrapper.getInstanceAndInitDb(getApplicationContext());
             List<TrackingWayRefBase> listToBeFilled = new LinkedList<>();
+            listToBeFilled.add(new TrackingWay());
             if(databaseWrapper.readAll(listToBeFilled)) {
                 for(TrackingWayRefBase way : listToBeFilled) {
-                    mMapManager.pushNewTrackingWay(way.getPoints(), way.getTag());
+                    mMapManager.pushNewTrackingWay(way);
                 }
             }
         } catch (SQLException | IllegalArgumentException exc) {
@@ -317,7 +324,8 @@ public class MapsActivity
         initNavigationView();
         mServicesProvider = this;
 
-        loadDB();
+        load(Environment.getExternalStorageDirectory().getPath() + "/xml_files/content.xml");
+//        loadDB();
     }
 
     @Override
@@ -347,6 +355,7 @@ public class MapsActivity
         mMap.setMyLocationEnabled(true);
         initMapManager();
 
+        loadDB();
         pushElementsOnMap();
     }
 
@@ -388,16 +397,19 @@ public class MapsActivity
                     showNoConfFileDialog();
                 }
 
+                mDrawer.closeDrawers();
                 break;
             case TERREIN_MAP:
                 removeCurrentFragment();
                 showMapFragment();
                 mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                mDrawer.closeDrawers();
                 break;
             case SATELITE_MAP:
                 removeCurrentFragment();
                 showMapFragment();
                 mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                mDrawer.closeDrawers();
                 break;
             case SHOW_CURRENT_POS:
                 break;
@@ -408,31 +420,45 @@ public class MapsActivity
                     showNewWayTracingDialog();
                 }
 
+                mDrawer.closeDrawers();
                 Log.i("Activity", Boolean.toString(mServiceIsBound));
                 break;
             case STOP_WAY_TRACE:
                 if(mTrackerService != null && mServiceIsBound) {
                     mTrackerService.stopUsingGPS();
-                    mMapManager.saveTracingWayInDB(mTracingWay.getTag());
+                    try {
+                        mMapManager.saveTracingWayInDB(
+                                mTracingWay.getTag(),
+                                DatabaseWrapper.getInstanceAndInitDb(getApplicationContext()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        unbindService(mServiceConnection);
+                        stopService(new Intent(getApplicationContext(), GPSWayTracker.class));
 
-                    unbindService(mServiceConnection);
-                    stopService(new Intent(getApplicationContext(), GPSWayTracker.class));
-
-                    mServiceIsBound = false;
+                        mServiceIsBound = false;
+                    }
                 }
+
+                mDrawer.closeDrawers();
                 break;
             case CAPTURE_PHOTO:
                 dispatchTakePictureIntent();
                 break;
             case SHOW_WAYS_LIST:
                 hideMapFragment();
+                removeCurrentFragment();
                 showWaysListFragment();
+                mDrawer.closeDrawers();
                 break;
             case SHOW_PLACES_LIST:
                 hideMapFragment();
+                removeCurrentFragment();
                 showPlacesListFragment();
+                mDrawer.closeDrawers();
                 break;
             case LOAD_CONF_FILE:
+                LoadConfFileDialog.newInstance().show(mFragmentManager, "LoadConfFileDialog");
                 mConfFileIsLoaded = true;
                 break;
         }
@@ -490,5 +516,14 @@ public class MapsActivity
         } catch(IOException | XmlPullParserException exc) {
             exc.printStackTrace();
         }
+    }
+
+    @Override
+    public void move(LatLng latLng) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+        removeCurrentFragment();
+        showMapFragment();
+        mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
     }
 }

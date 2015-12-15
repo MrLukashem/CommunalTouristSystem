@@ -14,6 +14,7 @@ import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.system.mrlukashem.Interfaces.MapManager;
 import com.system.mrlukashem.Interfaces.ServicesProvider;
+import com.system.mrlukashem.refbases.TrackingWayRefBase;
 import com.system.mrlukashem.utils.GPSListener;
 
 import java.util.ArrayList;
@@ -43,6 +44,10 @@ public class GPSWayTracker extends GPSListener {
 
     private String mWayTag;
 
+    private String mDesc;
+
+    private boolean mFirstTime = true;
+
     public GPSWayTracker() {
         super();
     }
@@ -52,6 +57,8 @@ public class GPSWayTracker extends GPSListener {
             if(provider != null) {
                 mServicesProvider = provider;
             }
+
+            mFirstTime = true;
 
             Log.i(TAG, "startGPSListening");
             mLocationManager = mServicesProvider.getLocationService();
@@ -87,9 +94,10 @@ public class GPSWayTracker extends GPSListener {
         mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
     }
 
-    public void setMapManager(@NonNull MapManager<?> mapManager, @NonNull String wayTag) {
+    public void setMapManager(@NonNull MapManager<?> mapManager, @NonNull String wayTag, @NonNull String desc) {
         mMapManager = mapManager;
         mWayTag = wayTag;
+        mDesc = desc;
     }
 
     public List<LatLng> getLastKnownTrackedPoints() {
@@ -128,17 +136,23 @@ public class GPSWayTracker extends GPSListener {
         mTrackedPoints.add(newLocation);
 
         if(mMapManager != null) {
-            boolean result = mMapManager.updateTrackingWay(
-                                new LatLng(location.getLatitude(), location.getLongitude()),
-                                mWayTag
-                            );
-
-            if(!result) {
+            if(mFirstTime) {
                 List<LatLng> list = new ArrayList<>();
                 list.add(new LatLng(location.getLatitude(), location.getLongitude()));
+                TrackingWayRefBase way = new TrackingWay();
+                way.setDescription(mDesc);
+                way.setTag(mWayTag);
+                way.setTitle(mWayTag);
+                way.pushPoints(list);
 
                 mMapManager.pushNewTrackingWay(
-                        list,
+                        way
+                );
+
+                mFirstTime = false;
+            } else {
+                mMapManager.updateTrackingWay(
+                        new LatLng(location.getLatitude(), location.getLongitude()),
                         mWayTag
                 );
             }

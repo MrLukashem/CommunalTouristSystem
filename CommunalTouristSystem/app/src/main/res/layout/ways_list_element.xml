@@ -8,6 +8,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/title_label_string"
+            android:textColor="#111"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
             android:layout_margin="5dp"/>
@@ -17,6 +18,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/way_title"
             android:layout_toEndOf="@id/title_label"
+            android:textColor="#111"
             android:layout_margin="5dp"/>
 
     <TextView
@@ -25,12 +27,14 @@
             android:id="@+id/way_length_label"
             android:layout_below="@id/title_label"
             android:text="@string/way_length_label_string"
+            android:textColor="#111"
             android:layout_margin="5dp"/>
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/way_length"
+            android:textColor="#111"
             android:layout_toEndOf="@id/way_length_label"
             android:layout_below="@id/way_title"
             android:layout_margin="5dp"/>
@@ -39,6 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/way_desc"
+            android:textColor="#111"
             android:layout_below="@id/way_length_label"
             android:layout_margin="5dp"/>
 
@@ -49,6 +54,7 @@
             android:layout_below="@id/way_desc"
             android:layout_alignParentEnd="true"
             android:textSize="12sp"
+            android:id="@+id/showWayOnMapButton"
             android:text="@string/show_way_on_map"
             android:layout_margin="5dp"/>
 </RelativeLayout>

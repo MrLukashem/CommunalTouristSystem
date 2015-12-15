@@ -72,6 +72,10 @@ public class CustomInfoWindow implements GoogleMap.InfoWindowAdapter, BitmapCall
 
     @Override
     public View getInfoContents(final Marker marker) {
+        if(CustomMapManager.getInstance().isTrackingWayMarker(marker)) {
+            return null;
+        }
+
         if(mLastMarker != null && mLastMarker.equals(marker)) {
             mOnlyRefreshMe = true;
         }

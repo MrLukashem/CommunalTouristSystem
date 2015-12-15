@@ -31,7 +31,7 @@ public class TrackingWayDescriptionDialog extends DialogFragment {
 
     public static TrackingWayDescriptionDialog newInstance(TrackingWayRefBase way) {
         if(way.isNill()) {
-           throw new IllegalArgumentException();
+            throw new IllegalArgumentException();
         }
 
         TrackingWayDescriptionDialog dialog = new TrackingWayDescriptionDialog();
@@ -45,17 +45,15 @@ public class TrackingWayDescriptionDialog extends DialogFragment {
         mStartWayTracingCB = (StartWayTracingCallback)getActivity();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = LayoutInflater.from(getActivity().getApplicationContext());
-        View rootView = inflater.inflate(R.layout.dialog_layout, null);
-
-        final EditText editTitle = (EditText)rootView.findViewById(R.id.title);
-        final EditText editDesc = (EditText)rootView.findViewById(R.id.description);
 
         builder
                 .setTitle(DIALOG_TITLE)
                 .setPositiveButton(OK, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        EditText editDesc = (EditText)getDialog().findViewById(R.id.description);
+                        EditText editTitle = (EditText)getDialog().findViewById(R.id.title);
+
                         mWay.setDescription(editDesc.getText().toString());
                         mWay.setTitle(editTitle.getText().toString());
                         mWay.setTag(mWay.getTitle());
